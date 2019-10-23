@@ -1,5 +1,0 @@
-package Backend
-
-func main() {
-
-}
