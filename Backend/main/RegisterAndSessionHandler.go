@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/csv"
 	"fmt"
@@ -77,7 +78,7 @@ func login(username string, password string) string {
 	return generateSessionKey(0)
 }
 
-func register(username string, password string) {
+func register(username string, password string) string {
 	f, err := os.Open("UserDataDB.csv")
 	if err != nil {
 		log.Println(err)
@@ -93,9 +94,16 @@ func register(username string, password string) {
 			log.Fatal(err)
 		}
 		if line[0] == username {
-			log.Println("Name bereits vorhanden")
-			return
+			log.Println("Username bereits vorhanden")
+			return "Username already used"
 		}
 	}
+	//hashing
+	sum := sha512.Sum512([]byte(password))
 
+	writeData := csv.NewWriter(f)
+
+	writeData.Flush()
+
+	return "Succesfull"
 }
