@@ -10,6 +10,7 @@ func SetupLinks() {
 	http.HandleFunc("/home", viewDashboardHandler)
 	http.HandleFunc("/registrationHandler", registerHandler)
 	http.HandleFunc("/loginHandler", loginHandler)
+	http.HandleFunc("/uploadHandler", uploadHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	http.ListenAndServe(":80", nil)
@@ -48,4 +49,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	login(user, pass)
 	http.Redirect(w, r, "/home", http.StatusFound)
 
+}
+
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("auth")
+	if err != nil || checkSessionKey(cookie.Value) == false {
+		fmt.Printf("No cookie or invalid Session")
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		//get userData.....
+	}
 }
