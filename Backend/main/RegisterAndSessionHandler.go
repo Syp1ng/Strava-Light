@@ -2,8 +2,12 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/csv"
 	"fmt"
+	"io"
+	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -74,4 +78,24 @@ func login(username string, password string) string {
 }
 
 func register(username string, password string) {
+	f, err := os.Open("UserDataDB.csv")
+	if err != nil {
+		log.Println(err)
+	}
+
+	userData := csv.NewReader(f)
+	for {
+		line, err := userData.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		if line[0] == username {
+			log.Println("Name bereits vorhanden")
+			return
+		}
+	}
+
 }
