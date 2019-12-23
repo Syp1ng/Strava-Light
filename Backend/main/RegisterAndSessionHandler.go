@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha512"
 	"encoding/base64"
 	"encoding/csv"
 	"fmt"
@@ -19,6 +18,7 @@ type sessionKeyInfo struct {
 
 //Settings
 var sessionKeyExpires time.Duration = 24 * 7
+var sessionKeyLen int = 50
 
 var allSessions map[string]sessionKeyInfo
 
@@ -37,7 +37,7 @@ func checkSessionKey(sessionKey string) bool {
 	return false
 }
 func generateSessionKey(userID int) string {
-	sessionKey := genRandomKey(50)
+	sessionKey := getRandomString(sessionKeyLen)
 	allSessions[sessionKey] = sessionKeyInfo{
 		validUntil: time.Now().Add(time.Hour * sessionKeyExpires),
 		forUser:    userID,
@@ -45,7 +45,7 @@ func generateSessionKey(userID int) string {
 	return base64.StdEncoding.EncodeToString([]byte(sessionKey))
 }
 
-func genRandomKey(keyLen int) string {
+func getRandomString(keyLen int) string {
 	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	var generatedKey string
 	for i := 0; i <= keyLen; i++ {
@@ -99,7 +99,7 @@ func register(username string, password string) string {
 		}
 	}
 	//hashing
-	sum := sha512.Sum512([]byte(password))
+	//sum := sha512.Sum512([]byte(password))
 
 	writeData := csv.NewWriter(f)
 
