@@ -1,8 +1,10 @@
-/*package main
+package main
+
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
 //Beispiel
 func TestSomething(t *testing.T) {
 	// assert equality
@@ -10,14 +12,14 @@ func TestSomething(t *testing.T) {
 	// assert inequality
 	assert.NotEqual(t, 123, 456, "they should not be equal")
 	// assert for nil (good for errors)
-	assert.Nil(t, object)
+	//	assert.Nil(t, object)
 	// assert for not nil (good when you expect something)
-	if assert.NotNil(t, object) {
+	//	if assert.NotNil(t, object) {
 
-		// now we know that object isn't nil, we are safe to make
-		// further assertions without causing any errors
-		assert.Equal(t, "Something", object.Value)
+	// now we know that object isn't nil, we are safe to make
+	// further assertions without causing any errors
+	//		assert.Equal(t, "Something", object.Value)
 
-	}
+	//	}
 
-}*/
+}
