@@ -13,7 +13,8 @@ func SetupLinks() {
 	http.HandleFunc("/uploadHandler", uploadHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
-	http.ListenAndServe(":80", nil)
+	//http.ListenAndServe(":80", nil)
+	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
 }
 
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {

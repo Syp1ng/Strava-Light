@@ -120,7 +120,7 @@ func register(email string, username string, password string) (bool, string) {
 
 	}
 	newUser := userData{maxID + 1, email, username, hashPassword(password)}
-	userDataMap[maxID] = newUser
+	userDataMap[maxID+1] = newUser
 	if appendToDB(newUser) {
 		return true, generateSessionKey(newUser.uID)
 	} else {
@@ -130,7 +130,7 @@ func register(email string, username string, password string) (bool, string) {
 }
 
 func appendToDB(user userData) bool {
-	var newline string = "\n" + strconv.Itoa(user.uID) + "," + user.email + "," + user.name + "," + user.password
+	var newline string = strconv.Itoa(user.uID) + "," + user.email + "," + user.name + "," + user.password + "\n"
 	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		return false
