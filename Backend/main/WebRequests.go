@@ -20,7 +20,7 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false {
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
 		//get userData.....
 	}
@@ -31,11 +31,15 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-
 	pass := r.Form.Get("password")
-	user := r.Form.Get("name")
-	register(user, pass)
+	userName := r.Form.Get("username")
+	email := r.Form.Get("email")
+	check, status := register(email, userName, pass)
+	if check {
+		cookie := http.Cookie{Name: "auth", Value: status}
+		http.SetCookie(w, &cookie)
 
+	}
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,9 +49,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pass := r.Form.Get("password")
-	user := r.Form.Get("name")
-	login(user, pass)
-	http.Redirect(w, r, "/home", http.StatusFound)
+	email := r.Form.Get("email")
+	check, status := login(email, pass)
+	if check {
+		cookie := http.Cookie{Name: "auth", Value: status}
+		http.SetCookie(w, &cookie)
+		fmt.Println("nice")
+	}
+	//http.Redirect(w, r, "/home", http.StatusFound)
 
 }
 

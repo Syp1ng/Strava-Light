@@ -1,13 +1,16 @@
 package main
 
 import (
-	"encoding/base64"
+	"bufio"
+	"crypto/sha512"
 	"encoding/csv"
+	"encoding/hex"
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,8 +22,18 @@ type sessionKeyInfo struct {
 //Settings
 var sessionKeyExpires time.Duration = 24 * 7
 var sessionKeyLen int = 50
+var saltLen int = 10
+var dbLocation string = "Backend/main/UserDataDB.csv"
 
 var allSessions map[string]sessionKeyInfo
+var userDataMap map[int]userData
+
+type userData struct {
+	uID      int
+	email    string
+	name     string
+	password string
+}
 
 func checkSessionKey(sessionKey string) bool {
 	fmt.Println(sessionKey)
@@ -38,11 +51,12 @@ func checkSessionKey(sessionKey string) bool {
 }
 func generateSessionKey(userID int) string {
 	sessionKey := getRandomString(sessionKeyLen)
+	expiresOn := time.Now().Add(time.Hour * sessionKeyExpires)
 	allSessions[sessionKey] = sessionKeyInfo{
-		validUntil: time.Now().Add(time.Hour * sessionKeyExpires),
+		validUntil: expiresOn,
 		forUser:    userID,
 	}
-	return base64.StdEncoding.EncodeToString([]byte(sessionKey))
+	return sessionKey //base64.StdEncoding.EncodeToString([]byte(sessionKey))
 }
 
 func getRandomString(keyLen int) string {
@@ -54,56 +68,98 @@ func getRandomString(keyLen int) string {
 	return generatedKey
 }
 
-func login(username string, password string) string {
-	/*sum := sha512.Sum512([]byte(password))
-	var passInDB string
-	uID:=0
-	userData, error := os.Open("userData.csv")
+func login(email string, password string) (bool, string) {
+	userData, error := os.Open(dbLocation)
 	if error == nil {
 		reader := csv.NewReader(userData)
 		for {
 			line, err := reader.Read()
 			if err == nil {
-				if line[1] == username{
-					passInDB = line[2]
-					uID = line[0]
-					break
+				if line[1] == email {
+					if comparePasswords(password, line[3]) {
+						x, _ := strconv.Atoi(line[0])
+						return true, generateSessionKey(x)
+					} else {
+						return false, "Wrong password"
+					}
 				}
-			} else{
+			} else {
 				break
 			}
 		}
-
-	}*/
-	return generateSessionKey(0)
+	}
+	return false, "Email unknown"
 }
 
-func register(username string, password string) string {
-	f, err := os.Open("UserDataDB.csv")
+func comparePasswords(userInputPass, dBPassAndSalt string) bool {
+	hashAlgo := sha512.New()
+	dBPassAndSaltArray := strings.Split(dBPassAndSalt, ":")
+	hashAlgo.Write([]byte(userInputPass + dBPassAndSaltArray[1]))
+	if hex.EncodeToString(hashAlgo.Sum(nil)) == dBPassAndSaltArray[0] {
+		return true
+	}
+	return false
+}
+func hashPassword(password string) string {
+	hashAlgo := sha512.New()
+	salt := getRandomString(saltLen)
+	hashAlgo.Write([]byte(password + salt))
+	return hex.EncodeToString(hashAlgo.Sum(nil)) + ":" + salt
+}
+
+func register(email string, username string, password string) (bool, string) {
+	readDB()
+	var maxID int = 0
+	for k, v := range userDataMap {
+		if email == v.email {
+			return false, "Account exist with that email"
+		}
+		if k > maxID {
+			maxID = k
+		}
+
+	}
+	newUser := userData{maxID + 1, email, username, hashPassword(password)}
+	userDataMap[maxID] = newUser
+	if appendToDB(newUser) {
+		return true, generateSessionKey(newUser.uID)
+	} else {
+		return false, "error writing to db"
+	}
+
+}
+
+func appendToDB(user userData) bool {
+	var newline string = "\n" + strconv.Itoa(user.uID) + "," + user.email + "," + user.name + "," + user.password
+	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
-		log.Println(err)
+		return false
 	}
+	defer f.Close()
 
-	userData := csv.NewReader(f)
-	for {
-		line, err := userData.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		if line[0] == username {
-			log.Println("Username bereits vorhanden")
-			return "Username already used"
-		}
+	_, err = f.WriteString(newline)
+	if err != nil {
+		return false
 	}
-	//hashing
-	//sum := sha512.Sum512([]byte(password))
-
-	writeData := csv.NewWriter(f)
-
-	writeData.Flush()
-
-	return "Succesfull"
+	return true
+}
+func readDB() {
+	file, err := os.Open(dbLocation)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		user := strings.Split(scanner.Text(), ",")
+		if len(user) != 4 {
+			continue //invalid or  empty
+		}
+		userID, _ := strconv.Atoi(user[0])
+		newUser := userData{userID, user[1], user[2], user[3]}
+		userDataMap[userID] = newUser
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
