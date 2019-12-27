@@ -45,7 +45,6 @@ func parseDoc(act Activity) Activity {
 	if err != nil || gpxDoc == nil {
 
 	}
-	var highSpeedTime = ""
 	var actspeed = 0.0
 	var globalcounter = 0.0
 	var kmCounter = 0.0
@@ -83,7 +82,7 @@ func parseDoc(act Activity) Activity {
 					}
 					if actspeed > act.highSpeed {
 						act.highSpeed = actspeed
-						highSpeedTime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
+						act.highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				}
 
@@ -92,7 +91,7 @@ func parseDoc(act Activity) Activity {
 			act.avgspeed = act.avgspeed / globalcounter      //noch Fehler
 			act.distance = math.Round(act.distance/10) / 100 //km + Rundung auf 2 Nachkommastellen
 			act.highSpeed = math.Round(act.highSpeed*100) / 100
-			fmt.Println(act.distance, act.highSpeed, highSpeedTime, act.avgspeed, globalcounter, standzeit, speedKM[4])
+			fmt.Println(act.distance, act.highSpeed, act.highspeedtime, act.avgspeed, globalcounter, standzeit, speedKM[4])
 
 		}
 	}
