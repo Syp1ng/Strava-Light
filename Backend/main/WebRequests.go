@@ -78,8 +78,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 	activity := r.FormValue("activity")
 	kommentare := r.FormValue("kommentare")
-	tempFile, err := ioutil.TempFile("GPX_Files", "gpxDatei*.gpx")
-	log.Println(tempFile.Name(), kommentare, activity)
+	tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -89,7 +88,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	tempFile.Write(fileBytes)
-	parseDoc(tempFile.Name())
+	uploadfile(tempFile.Name(), activity, kommentare)
 
 	//}
 }

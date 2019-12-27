@@ -39,17 +39,14 @@ type GpxPoint struct {
 
 var gpxDocuments []*Gpx
 
-func parseDoc(filename string) {
+func parseDoc(act Activity) Activity {
 
-	gpxDoc, err := parseFile(filename)
+	gpxDoc, err := parseFile(act.filename)
 	if err != nil || gpxDoc == nil {
 
 	}
-	var distance = 0.0
-	var highSpeed = 0.0
 	var highSpeedTime = ""
 	var actspeed = 0.0
-	var avgspeed = 0.0
 	var globalcounter = 0.0
 	var kmCounter = 0.0
 	var actkmSpeed = 0.0
@@ -66,8 +63,8 @@ func parseDoc(filename string) {
 					gpxDoc.Tracks[i].Segments[j].Points[k].Lon,
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lat,
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lon)
-				distance += distance2Points
-				if distance >= float64(aktKM) {
+				act.distance += distance2Points
+				if act.distance >= float64(aktKM) {
 					//fmt.Println(actkmSpeed, kmCounter)
 					speedKM[aktKM/1000] = actkmSpeed / kmCounter //12
 					aktKM += 1000
@@ -77,27 +74,29 @@ func parseDoc(filename string) {
 				if gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp != "" || gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp != "" { // noch Fehler
 					actspeed, timebetween = speed(distance2Points, gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp, gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp)
 					if actspeed > 0.5 { //6.4
-						avgspeed = avgspeed + actspeed //6.2
+						act.avgspeed = act.avgspeed + actspeed //6.2
 						actkmSpeed = actkmSpeed + actspeed
 						globalcounter += 1
 						kmCounter += 1
 					} else { //6.3
 						standzeit = standzeit + timebetween
 					}
-					if actspeed > highSpeed {
-						highSpeed = actspeed
+					if actspeed > act.highSpeed {
+						act.highSpeed = actspeed
 						highSpeedTime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				}
 
 				//log.Print(distance, distance2Points, actspeed, highSpeed, highSpeedTime)
 			}
-			avgspeed = avgspeed / globalcounter      //noch Fehler
-			distance = math.Round(distance/10) / 100 //km + Rundung auf 2 Nachkommastellen
-			highSpeed = math.Round(highSpeed*100) / 100
-			fmt.Println(distance, highSpeed, highSpeedTime, avgspeed, globalcounter, standzeit, speedKM[4])
+			act.avgspeed = act.avgspeed / globalcounter      //noch Fehler
+			act.distance = math.Round(act.distance/10) / 100 //km + Rundung auf 2 Nachkommastellen
+			act.highSpeed = math.Round(act.highSpeed*100) / 100
+			fmt.Println(act.distance, act.highSpeed, highSpeedTime, act.avgspeed, globalcounter, standzeit, speedKM[4])
+
 		}
 	}
+	return act
 }
 func speed(distance float64, timestamp1 string, timestamp2 string) (float64, float64) {
 	var timebetween = 0.0
