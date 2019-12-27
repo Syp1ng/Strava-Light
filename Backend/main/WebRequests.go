@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -14,7 +15,7 @@ func SetupLinks() {
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
-	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
+	//log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
 }
 
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +68,25 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
-		//get userData.....
+		r.ParseMultipartForm(10 << 20)
+		file, handler, err := r.FormFile("datei")
+		if err != nil {
+			fmt.Println(file, "Error Retrieving the File")
+			fmt.Println(err, handler)
+			return
+		}
+		defer file.Close()
+		tempFile, err := ioutil.TempFile("GPX_Files", "gpxDatei")
+		log.Println(tempFile.Name())
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tempFile.Close()
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			fmt.Println(err)
+		}
+		tempFile.Write(fileBytes)
+
 	}
 }

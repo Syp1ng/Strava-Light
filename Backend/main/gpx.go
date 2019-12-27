@@ -11,9 +11,9 @@ import (
 
 //http://www.movable-type.co.uk/scripts/latlong.html
 
-func main() {
-	parseDoc()
-}
+//func main() {
+//parseDoc("GPX_Files/2019-09-21_15-54.gpx")
+//}
 
 type Gpx struct {
 	XMLName   xml.Name `xml:"gpx"`
@@ -39,9 +39,9 @@ type GpxPoint struct {
 
 var gpxDocuments []*Gpx
 
-func parseDoc() {
+func parseDoc(filename string) {
 
-	gpxDoc, err := parseFile()
+	gpxDoc, err := parseFile(filename)
 	if err != nil || gpxDoc == nil {
 
 	}
@@ -112,8 +112,8 @@ func speed(distance float64, timestamp1 string, timestamp2 string) (float64, flo
 
 }
 
-func parseFile() (*Gpx, error) {
-	gpxFile, err := os.Open("GPX_Files/2019-09-14_15-14.gpx")
+func parseFile(filename string) (*Gpx, error) {
+	gpxFile, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
