@@ -8,14 +8,14 @@
 <h1>Neue Aktivität hochladen</h1>
 <form  enctype="multipart/form-data" action="https://localhost/uploadHandler" method="post">
     <label>Art der Aktivität:</label><br>
-    <select name="activity" size="2">
+    <select name="activity" size="2" required="required">
         <option>Laufen</option>
         <option>Radfahren</option>
     </select><br><br>
     <label>Kommentare</label><br>
-    <textarea rows="10" cols="50"></textarea><br><br>
+    <textarea name="kommentare" rows="10" cols="50"></textarea><br><br>
     <label>GPX_Datei zum hochladen auswählen:</label><br>
-    <input name="datei" type="file" size="50" accept=""><br><br>
+    <input name="datei" type="file" size="50" accept="" required="required"><br><br>
     <button>Hochladen</button>
 </form>
 <h1>Meine Aktivitäten</h1>

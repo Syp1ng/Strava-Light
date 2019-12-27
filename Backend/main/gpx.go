@@ -68,7 +68,7 @@ func parseDoc(filename string) {
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lon)
 				distance += distance2Points
 				if distance >= float64(aktKM) {
-					fmt.Println(actkmSpeed, kmCounter)
+					//fmt.Println(actkmSpeed, kmCounter)
 					speedKM[aktKM/1000] = actkmSpeed / kmCounter //12
 					aktKM += 1000
 					actkmSpeed = 0.0
