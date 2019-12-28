@@ -1,8 +1,4 @@
-ActivityID, UserID, Speicherort, Art der Aktivität, Kommentar, Gesamtdistanz, Maximalgeschwindigkeit, Zeitpunkt der Maximalgeschwindigkeit, Durchschnittsgeschwindigkeit
-1,1,DataStorage\GPX_Files\gpxDatei940355539.gpx,Laufen
-1,1,DataStorage\GPX_Files\gpxDatei843262699.gpx,Laufen
-1,1,DataStorage\GPX_Files\gpxDatei024085251.gpx,Laufen,vvv,0.000000,0.000000,,0.000000
-1,1,DataStorage\GPX_Files\gpxDatei990961923.gpx,Laufen,vvv,0.000000,0.000000,,0.000000
-1,1,DataStorage\GPX_Files\gpxDatei792385151.gpx,Laufen,vvv,24.710000,18.530000,,NaN
-1,1,DataStorage\GPX_Files\gpxDatei067889175.gpx,Laufen,vvv,24.710000,18.530000,2019-09-14T14:22:04.295Z,NaN
-1,1,DataStorage\GPX_Files\gpxDatei566930570.gpx,Radfahren,Hallo das ist ein Kommentar,24.710000,18.530000,2019-09-14T14:22:04.295Z,NaN
+ActivityID, UserID, Speicherort, Art der Aktivität, Kommentar, Gesamtdistanz in KM, Standzeit in s, Maximalgeschwindigkeit in Ms, Zeitpunkt der Maximalgeschwindigkeit, Durchschnittsgeschwindigkeit in Ms, Durchschnittsgeschwindigkeit schnellster Kilometer, schnellster KM, Durchschnittsgeschwindigkeit langsamster Kilometer, langsamster KM
+1,1,DataStorage\GPX_Files\gpxDatei477418679.gpx,Radfahren,dddd,21.420000,226.250000,15.070000,2019-09-22T13:34:56.465Z,6.189109,17,8.613464,13,2.913756
+1,1,DataStorage\GPX_Files\gpxDatei959300183.gpx,Radfahren,,21.420000,226.250000,15.070000,2019-09-22T13:34:56.465Z,6.189109,17,8.613464,13,2.913756
+1,1,DataStorage\GPX_Files\gpxDatei325533399.gpx,Radfahren,Testlauf,16.100000,65.715000,16.130000,2019-09-29T13:11:51.885Z,5.953503,15,10.460576,11,2.816230

@@ -46,12 +46,11 @@ func parseDoc(act Activity) Activity {
 
 	}
 	var actspeed = 0.0
-	var globalcounter = 0.0
+	var globalcounter = 0
 	var kmCounter = 0.0
 	var actkmSpeed = 0.0
 	var timebetween = 0.0
-	var standzeit = 0.0
-	var speedKM [100]float64
+	//var speedKM [100]float64
 	var aktKM = 1000
 	for i := 0; i < len(gpxDoc.Tracks); i++ {
 		for j := 0; j < len(gpxDoc.Tracks[i].Segments); j++ {
@@ -64,8 +63,15 @@ func parseDoc(act Activity) Activity {
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lon)
 				act.distance += distance2Points
 				if act.distance >= float64(aktKM) {
-					//fmt.Println(actkmSpeed, kmCounter)
-					speedKM[aktKM/1000] = actkmSpeed / kmCounter //12
+					speedKM := actkmSpeed / kmCounter
+					if act.avgSpeedFastMS < speedKM {
+						act.avgSpeedFastKM = aktKM / 1000
+						act.avgSpeedFastMS = speedKM
+					}
+					if act.avgSpeedSlowMS > speedKM {
+						act.avgSpeedSlowKM = aktKM / 1000
+						act.avgSpeedSlowMS = speedKM
+					}
 					aktKM += 1000
 					actkmSpeed = 0.0
 					kmCounter = 0.0
@@ -78,23 +84,20 @@ func parseDoc(act Activity) Activity {
 						globalcounter += 1
 						kmCounter += 1
 					} else { //6.3
-						standzeit = standzeit + timebetween
+						act.standzeit = act.standzeit + timebetween
 					}
 					if actspeed > act.highSpeed {
 						act.highSpeed = actspeed
 						act.highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				}
-
 				//log.Print(distance, distance2Points, actspeed, highSpeed, highSpeedTime)
 			}
-			act.avgspeed = act.avgspeed / globalcounter      //noch Fehler
-			act.distance = math.Round(act.distance/10) / 100 //km + Rundung auf 2 Nachkommastellen
-			act.highSpeed = math.Round(act.highSpeed*100) / 100
-			fmt.Println(act.distance, act.highSpeed, act.highspeedtime, act.avgspeed, globalcounter, standzeit, speedKM[4])
-
 		}
 	}
+	act.avgspeed = act.avgspeed / float64(globalcounter) //noch Fehler
+	act.distance = math.Round(act.distance/10) / 100     //km + Rundung auf 2 Nachkommastellen
+	act.highSpeed = math.Round(act.highSpeed*100) / 100
 	return act
 }
 func speed(distance float64, timestamp1 string, timestamp2 string) (float64, float64) {

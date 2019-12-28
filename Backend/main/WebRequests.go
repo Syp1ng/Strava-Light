@@ -67,7 +67,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || checkSessionKey(cookie.Value) == false {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/", http.StatusFound)
-	} else {*/
+	} else {
+	*/
 	r.ParseMultipartForm(10 << 20)
 	file, handler, err := r.FormFile("datei")
 	if err != nil {
@@ -89,6 +90,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tempFile.Write(fileBytes)
 	uploadfile(tempFile.Name(), activity, kommentare)
-
+	http.Redirect(w, r, "/landing.html", http.StatusFound)
 	//}
 }
