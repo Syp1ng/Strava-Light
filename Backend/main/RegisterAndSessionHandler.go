@@ -23,16 +23,20 @@ type sessionKeyInfo struct {
 var sessionKeyExpires time.Duration = 24 * 7
 var sessionKeyLen int = 50
 var saltLen int = 10
-var dbLocation string = "Backend/main/UserDataDB.csv"
+var dbLocation string = "DataStorage/UserDataDB.csv"
 
 var allSessions map[string]sessionKeyInfo
 var userDataMap map[int]userData
 
 type userData struct {
 	uID      int
+	userName string
 	email    string
-	name     string
 	password string
+}
+
+func getUID(sessionKey string) int {
+	return allSessions[sessionKey].forUser
 }
 
 func checkSessionKey(sessionKey string) bool {
@@ -68,14 +72,14 @@ func getRandomString(keyLen int) string {
 	return generatedKey
 }
 
-func login(email string, password string) (bool, string) {
+func login(userName string, password string) (bool, string) {
 	userData, error := os.Open(dbLocation)
 	if error == nil {
 		reader := csv.NewReader(userData)
 		for {
 			line, err := reader.Read()
 			if err == nil {
-				if line[1] == email {
+				if line[1] == userName {
 					if comparePasswords(password, line[3]) {
 						x, _ := strconv.Atoi(line[0])
 						return true, generateSessionKey(x)
@@ -107,7 +111,13 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hashAlgo.Sum(nil)) + ":" + salt
 }
 
-func register(email string, username string, password string) (bool, string) {
+func register(userName string, email string, password string, confirmPass string) (bool, string) {
+	if password != confirmPass {
+		return false, "Passwörter stimmen nicht überein"
+	} else if len(password) < 8 {
+		return false, "Bitte ein längeres Passwort"
+	}
+
 	readDB()
 	var maxID int = 0
 	for k, v := range userDataMap {
@@ -119,7 +129,7 @@ func register(email string, username string, password string) (bool, string) {
 		}
 
 	}
-	newUser := userData{maxID + 1, email, username, hashPassword(password)}
+	newUser := userData{maxID + 1, userName, email, hashPassword(password)}
 	userDataMap[maxID+1] = newUser
 	if appendToDB(newUser) {
 		return true, generateSessionKey(newUser.uID)
@@ -130,7 +140,7 @@ func register(email string, username string, password string) (bool, string) {
 }
 
 func appendToDB(user userData) bool {
-	var newline string = strconv.Itoa(user.uID) + "," + user.email + "," + user.name + "," + user.password + "\n"
+	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
 	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		return false

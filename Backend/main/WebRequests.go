@@ -34,13 +34,16 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	pass := r.Form.Get("password")
+	confirmPass := r.Form.Get("confirmPassword")
 	userName := r.Form.Get("username")
 	email := r.Form.Get("email")
-	check, status := register(email, userName, pass)
+	check, status := register(userName, email, pass, confirmPass)
 	if check {
 		cookie := http.Cookie{Name: "auth", Value: status}
 		http.SetCookie(w, &cookie)
-
+		http.Redirect(w, r, "/home", http.StatusFound)
+	} else {
+		fmt.Println(status)
 	}
 }
 
@@ -51,13 +54,17 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pass := r.Form.Get("password")
-	email := r.Form.Get("email")
-	check, status := login(email, pass)
+	userName := r.Form.Get("username")
+	check, status := login(userName, pass)
 	if check {
 		cookie := http.Cookie{Name: "auth", Value: status}
 		http.SetCookie(w, &cookie)
 		fmt.Println("nice")
+		http.Redirect(w, r, "/home", http.StatusFound)
+	} else {
+		fmt.Println(status)
 	}
+
 	//http.Redirect(w, r, "/home", http.StatusFound)
 
 }
