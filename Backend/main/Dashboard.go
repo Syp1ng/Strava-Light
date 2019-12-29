@@ -1,5 +1,43 @@
 package main
 
+func getDataForUser(uID int) []Activity {
+	var lala = []Activity{
+		Activity{
+			actID:          1,
+			UserID:         1,
+			filename:       "asdsa",
+			activityart:    "sada",
+			comment:        "asdasd",
+			distance:       5.0,
+			standzeit:      5.0,
+			highSpeed:      5.0,
+			highspeedtime:  "string",
+			avgspeed:       5.0,
+			avgSpeedFastKM: 3,
+			avgSpeedFastMS: 4,
+			avgSpeedSlowKM: 5,
+			avgSpeedSlowMS: 5.6,
+		},
+		Activity{
+			actID:          3,
+			UserID:         4,
+			filename:       "asdsa",
+			activityart:    "sada",
+			comment:        "asdasd",
+			distance:       10.0,
+			standzeit:      5.0,
+			highSpeed:      5.0,
+			highspeedtime:  "string",
+			avgspeed:       5.0,
+			avgSpeedFastKM: 3,
+			avgSpeedFastMS: 4,
+			avgSpeedSlowKM: 5,
+			avgSpeedSlowMS: 5.6,
+		},
+	}
+	return lala
+}
+
 /*
 const DashBoardView = "<!DOCTYPE html>" +
 	"<html>" +
