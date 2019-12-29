@@ -5,7 +5,19 @@
     <title>Dashboard</title>
 </head>
 <body>
-<h1>{{.PageTitle}}</h1>
+<h1>Neue Aktivität hochladen</h1>
+<form  enctype="multipart/form-data" action="https://localhost/uploadHandler" method="post">
+    <label>Art der Aktivität:</label><br>
+    <select name="activity" size="2" required="required">
+        <option>Laufen</option>
+        <option>Radfahren</option>
+    </select><br><br>
+    <label>Kommentare</label><br>
+    <textarea name="kommentare" rows="10" cols="50"></textarea><br><br>
+    <label>GPX_Datei zum hochladen auswählen:</label><br>
+    <input name="datei" type="file" size="50" accept="" required="required"><br><br>
+    <button>Hochladen</button>
+</form>
 <h1>Ihre Aktivitäten</h1>
 
 
@@ -29,15 +41,15 @@
         <td>{{.ActID}}</td>
         <td>{{.Activityart}}</td>
         <td>{{.Comment}}</td>
-        <td>{{.Distance}}</td>
-        <td>{{.Standzeit}}</td>
-        <td>{{.HighSpeed}}</td>
+        <td>{{.Distance}} km</td>
+        <td>{{.Standzeit}} s</td>
+        <td>{{.HighSpeed}} M/s</td>
         <td>{{.Highspeedtime}}</td>
-        <td>{{.Avgspeed}}</td>
+        <td>{{.Avgspeed}} M/s</td>
         <td>{{.AvgSpeedFastKM}}</td>
-        <td>{{.AvgSpeedFastMS}}</td>
+        <td>{{.AvgSpeedFastMS}} M/s</td>
         <td>{{.AvgSpeedSlowKM}}</td>
-        <td>{{.AvgSpeedSlowMS}}</td>
+        <td>{{.AvgSpeedSlowMS}} M/s</td>
         <td><button>Edit</button><button>Delete</button></td>
     </tr>
     {{end}}

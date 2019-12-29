@@ -21,7 +21,6 @@ func SetupLinks() {
 }
 
 type FrontendInf struct {
-	PageTitle  string
 	Activities []Activity
 }
 
@@ -47,37 +46,7 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(error)
 
 		var lala = FrontendInf{
-			PageTitle: "Test",
-			Activities: []Activity{{
-				ActID:          1,
-				UserID:         "1",
-				Filename:       "asdsa",
-				Activityart:    "sada",
-				Comment:        "asdasd",
-				Distance:       5.0,
-				Standzeit:      5.0,
-				HighSpeed:      5.0,
-				Highspeedtime:  "string",
-				Avgspeed:       5.0,
-				AvgSpeedFastKM: 3,
-				AvgSpeedFastMS: 4,
-				AvgSpeedSlowKM: 5,
-				AvgSpeedSlowMS: 5.6}, {
-				ActID:          3,
-				UserID:         "4",
-				Filename:       "asdsa",
-				Activityart:    "sada",
-				Comment:        "asdasd",
-				Distance:       10.0,
-				Standzeit:      5.0,
-				HighSpeed:      5.0,
-				Highspeedtime:  "string",
-				Avgspeed:       5.0,
-				AvgSpeedFastKM: 3,
-				AvgSpeedFastMS: 4,
-				AvgSpeedSlowKM: 5,
-				AvgSpeedSlowMS: 5.6},
-			},
+			Activities: getDataForUser(getUID(cookie.Value)),
 		}
 		tmpl.Execute(w, lala)
 	}
@@ -157,7 +126,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 		tempFile.Write(fileBytes)
-		uploadfile(tempFile.Name(), activity, kommentare, cookie.Value)
-		http.Redirect(w, r, "/landing.html", http.StatusFound)
+		uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value))
+		viewDashboardHandler(w, r)
+		//http.Redirect(w, r, "/dashboardTemplate.html", http.StatusFound)
 	}
 }

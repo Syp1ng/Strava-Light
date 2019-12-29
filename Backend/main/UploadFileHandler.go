@@ -8,7 +8,7 @@ import (
 
 type Activity struct {
 	ActID          int
-	UserID         string
+	UserID         int
 	Filename       string
 	Activityart    string
 	Comment        string
@@ -25,7 +25,7 @@ type Activity struct {
 
 var dbLocationActivity = "DataStorage/ActivityDB.csv"
 
-func uploadfile(filename string, activity string, kommentar string, uid string) {
+func uploadfile(filename string, activity string, kommentar string, uid int) {
 
 	newAct := Activity{1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000}
 	newAct = parseDoc(newAct)
@@ -41,7 +41,7 @@ func uploadfile(filename string, activity string, kommentar string, uid string) 
 
 func appendToDBACT(act Activity) bool {
 
-	var newline = strconv.Itoa(act.ActID) + "," + act.UserID + "," + act.Filename + "," +
+	var newline = strconv.Itoa(act.ActID) + "," + strconv.Itoa(act.UserID) + "," + act.Filename + "," +
 		act.Activityart + "," + act.Comment + "," + fmt.Sprintf("%f", act.Distance) + "," + fmt.Sprintf("%f", act.Standzeit) + "," +
 		fmt.Sprintf("%f", act.HighSpeed) + "," + act.Highspeedtime + "," + fmt.Sprintf("%f", act.Avgspeed) +
 		"," + strconv.Itoa(act.AvgSpeedFastKM) + "," + fmt.Sprintf("%f", act.AvgSpeedFastMS) + "," +
