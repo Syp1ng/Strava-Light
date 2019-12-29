@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,6 +17,7 @@ func SetupLinks() {
 
 	//http.ListenAndServe(":80", nil)
 	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
+
 }
 
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +26,44 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
-		//get userData.....
+		template, error := template.ParseFiles("Frontend/dashboardTemplate.html")
+		fmt.Println(error)
+		var lala = []Activity{
+			Activity{
+				actID:          1,
+				UserID:         1,
+				filename:       "asdsa",
+				activityart:    "sada",
+				comment:        "asdasd",
+				distance:       5.0,
+				standzeit:      5.0,
+				highSpeed:      5.0,
+				highspeedtime:  "string",
+				avgspeed:       5.0,
+				avgSpeedFastKM: 3,
+				avgSpeedFastMS: 4,
+				avgSpeedSlowKM: 5,
+				avgSpeedSlowMS: 5.6,
+			},
+			Activity{
+				actID:          3,
+				UserID:         4,
+				filename:       "asdsa",
+				activityart:    "sada",
+				comment:        "asdasd",
+				distance:       10.0,
+				standzeit:      5.0,
+				highSpeed:      5.0,
+				highspeedtime:  "string",
+				avgspeed:       5.0,
+				avgSpeedFastKM: 3,
+				avgSpeedFastMS: 4,
+				avgSpeedSlowKM: 5,
+				avgSpeedSlowMS: 5.6,
+			},
+		}
+
+		template.Execute(w, lala)
 	}
 }
 
@@ -63,6 +102,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusFound)
 	} else {
 		fmt.Println(status)
+		http.Error(w,
+			http.StatusText(http.StatusUnauthorized),
+			http.StatusUnauthorized)
 	}
 
 	//http.Redirect(w, r, "/home", http.StatusFound)
