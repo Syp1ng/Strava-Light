@@ -1,11 +1,15 @@
 package main
 
 import (
+	"archive/zip"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func SetupLinks() {
@@ -110,24 +114,80 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer file.Close()
-		activity := r.FormValue("activity")
-		kommentare := r.FormValue("kommentare")
-		tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
-		if err != nil {
-			fmt.Println(err)
-		}
-		defer tempFile.Close()
-		fileBytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			fmt.Println(err)
-		}
-		//buffer,err := file.Read(make([]byte, 512))
-		if err != nil {
+		if strings.HasSuffix(handler.Filename, ".gpx") {
+			activity := r.FormValue("activity")
+			kommentare := r.FormValue("kommentare")
+			tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer tempFile.Close()
+			fileBytes, err := ioutil.ReadAll(file)
+			if err != nil {
+				fmt.Println(err)
+			}
+			tempFile.Write(fileBytes)
+			uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value))
 
+		} else if strings.HasSuffix(handler.Filename, ".zip") {
+			tempFile, err := ioutil.TempFile("DataStorage/ZIP_Files", "zipDatei*.zip")
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer tempFile.Close()
+			fileBytes, err := ioutil.ReadAll(file)
+			if err != nil {
+				fmt.Println(err)
+			}
+			tempFile.Write(fileBytes)
+			gpxFiles, err := Unzip(tempFile.Name(), getUID(cookie.Value), r.FormValue("activity"), r.FormValue("kommentare"))
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Println(gpxFiles)
+		} else {
+			fmt.Println("No GPX or ZIP Data")
 		}
-		tempFile.Write(fileBytes)
-		uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value))
 		viewDashboardHandler(w, r)
-		//http.Redirect(w, r, "/dashboardTemplate.html", http.StatusFound)
+
 	}
+}
+func Unzip(src string, uid int, actactivity string, komm string) ([]string, error) {
+	zipReader, _ := zip.OpenReader(src)
+	for _, file := range zipReader.Reader.File {
+		zippedFile, err := file.Open()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer zippedFile.Close()
+		if file.FileInfo().IsDir() {
+			log.Println("isDir")
+		} else {
+			if strings.HasSuffix(file.Name, ".gpx") {
+				tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
+				if err != nil {
+					fmt.Println(err)
+				}
+				defer tempFile.Close()
+				filepath := tempFile.Name()
+				outputFile, err := os.OpenFile(
+					filepath,
+					os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
+					file.Mode(),
+				)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer outputFile.Close()
+
+				_, err = io.Copy(outputFile, zippedFile)
+				if err != nil {
+					log.Fatal(err)
+				}
+				uploadfile(tempFile.Name(), actactivity, komm, uid)
+			}
+		}
+	}
+
+	return nil, nil
 }
