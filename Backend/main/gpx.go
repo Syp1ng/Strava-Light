@@ -41,7 +41,7 @@ var gpxDocuments []*Gpx
 
 func parseDoc(act Activity) Activity {
 
-	gpxDoc, err := parseFile(act.filename)
+	gpxDoc, err := parseFile(act.Filename)
 	if err != nil || gpxDoc == nil {
 
 	}
@@ -61,16 +61,16 @@ func parseDoc(act Activity) Activity {
 					gpxDoc.Tracks[i].Segments[j].Points[k].Lon,
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lat,
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lon)
-				act.distance += distance2Points
-				if act.distance >= float64(aktKM) {
+				act.Distance += distance2Points
+				if act.Distance >= float64(aktKM) {
 					speedKM := actkmSpeed / kmCounter
-					if act.avgSpeedFastMS < speedKM {
-						act.avgSpeedFastKM = aktKM / 1000
-						act.avgSpeedFastMS = speedKM
+					if act.AvgSpeedFastMS < speedKM {
+						act.AvgSpeedFastKM = aktKM / 1000
+						act.AvgSpeedFastMS = speedKM
 					}
-					if act.avgSpeedSlowMS > speedKM {
-						act.avgSpeedSlowKM = aktKM / 1000
-						act.avgSpeedSlowMS = speedKM
+					if act.AvgSpeedSlowMS > speedKM {
+						act.AvgSpeedSlowKM = aktKM / 1000
+						act.AvgSpeedSlowMS = speedKM
 					}
 					aktKM += 1000
 					actkmSpeed = 0.0
@@ -79,25 +79,25 @@ func parseDoc(act Activity) Activity {
 				if gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp != "" || gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp != "" { // noch Fehler
 					actspeed, timebetween = speed(distance2Points, gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp, gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp)
 					if actspeed > 0.5 { //6.4
-						act.avgspeed = act.avgspeed + actspeed //6.2
+						act.Avgspeed = act.Avgspeed + actspeed //6.2
 						actkmSpeed = actkmSpeed + actspeed
 						globalcounter += 1
 						kmCounter += 1
 					} else { //6.3
-						act.standzeit = act.standzeit + timebetween
+						act.Standzeit = act.Standzeit + timebetween
 					}
-					if actspeed > act.highSpeed {
-						act.highSpeed = actspeed
-						act.highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
+					if actspeed > act.HighSpeed {
+						act.HighSpeed = actspeed
+						act.Highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				}
 				//log.Print(distance, distance2Points, actspeed, highSpeed, highSpeedTime)
 			}
 		}
 	}
-	act.avgspeed = act.avgspeed / float64(globalcounter) //noch Fehler
-	act.distance = math.Round(act.distance/10) / 100     //km + Rundung auf 2 Nachkommastellen
-	act.highSpeed = math.Round(act.highSpeed*100) / 100
+	act.Avgspeed = act.Avgspeed / float64(globalcounter) //noch Fehler
+	act.Distance = math.Round(act.Distance/10) / 100     //km + Rundung auf 2 Nachkommastellen
+	act.HighSpeed = math.Round(act.HighSpeed*100) / 100
 	return act
 }
 func speed(distance float64, timestamp1 string, timestamp2 string) (float64, float64) {
@@ -106,7 +106,12 @@ func speed(distance float64, timestamp1 string, timestamp2 string) (float64, flo
 	t, err := time.Parse(layout, timestamp1)
 	t1, err := time.Parse(layout, timestamp2)
 	if err != nil {
-		fmt.Println(err)
+		layout := "2006-01-02T15:04:05Z"
+		t, err = time.Parse(layout, timestamp1)
+		t1, err = time.Parse(layout, timestamp2)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	timebetween = float64(t1.Sub(t)) / 1000000000
 	return distance / timebetween, timebetween

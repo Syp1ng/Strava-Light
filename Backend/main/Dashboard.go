@@ -2,10 +2,10 @@ package main
 
 func getDataForUser(uID int) []Activity {
 	//from dbLocationActivity
-	var lala = []Activity{
+	/*var lala = []Activity{
 		Activity{
-			actID:          1,
-			UserID:         1,
+			ActID:          1,
+			UserID:         "1",
 			filename:       "asdsa",
 			activityart:    "sada",
 			comment:        "asdasd",
@@ -20,8 +20,8 @@ func getDataForUser(uID int) []Activity {
 			avgSpeedSlowMS: 5.6,
 		},
 		Activity{
-			actID:          3,
-			UserID:         4,
+			ActID:          3,
+			UserID:         "4",
 			filename:       "asdsa",
 			activityart:    "sada",
 			comment:        "asdasd",
@@ -35,8 +35,8 @@ func getDataForUser(uID int) []Activity {
 			avgSpeedSlowKM: 5,
 			avgSpeedSlowMS: 5.6,
 		},
-	}
-	return lala
+	}*/
+	return nil
 }
 
 /*

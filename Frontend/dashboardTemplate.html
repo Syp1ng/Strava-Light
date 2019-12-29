@@ -5,8 +5,10 @@
     <title>Dashboard</title>
 </head>
 <body>
-
+<h1>{{.PageTitle}}</h1>
 <h1>Ihre Aktivitäten</h1>
+
+
 <table>
   <tr>
     <th>ActivityID</th>
@@ -22,20 +24,20 @@
     <th>Durchschnittsgeschwindigkeit langsamster Kilometer</th>
     <th>langsamster KM</th>
   </tr>
-    {{range .}}
+    {{range .Activities}}
     <tr>
-        <td>{{.actID}}</td>
-        <td>{{.activityart}}</td>
-        <td>{{.comment}}</td>
-        <td>{{.distance}}</td>
-        <td>{{.standzeit}}</td>
-        <td>{{.highSpeed}}</td>
-        <td>{{.highspeedtime}}</td>
-        <td>{{.avgspeed}}</td>
-        <td>{{.avgSpeedFastKM}}</td>
-        <td>{{.avgSpeedFastMS}}</td>
-        <td>{{.avgSpeedSlowKM}}</td>
-        <td>{{.avgSpeedSlowMS}}</td>
+        <td>{{.ActID}}</td>
+        <td>{{.Activityart}}</td>
+        <td>{{.Comment}}</td>
+        <td>{{.Distance}}</td>
+        <td>{{.Standzeit}}</td>
+        <td>{{.HighSpeed}}</td>
+        <td>{{.Highspeedtime}}</td>
+        <td>{{.Avgspeed}}</td>
+        <td>{{.AvgSpeedFastKM}}</td>
+        <td>{{.AvgSpeedFastMS}}</td>
+        <td>{{.AvgSpeedSlowKM}}</td>
+        <td>{{.AvgSpeedSlowMS}}</td>
         <td><button>Edit</button><button>Delete</button></td>
     </tr>
     {{end}}

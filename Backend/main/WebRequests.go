@@ -20,6 +20,11 @@ func SetupLinks() {
 	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
 }
 
+type FrontendInf struct {
+	PageTitle  string
+	Activities []Activity
+}
+
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	oldCookie, err := r.Cookie("auth")
 	if err == nil {
@@ -38,43 +43,43 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		//hier geht net scheißdreck
-		template, error := template.ParseFiles("Frontend/dashboardTemplate.html")
+		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
 		fmt.Println(error)
-		var lala = []Activity{
-			Activity{
-				actID:          1,
-				UserID:         1,
-				filename:       "asdsa",
-				activityart:    "sada",
-				comment:        "asdasd",
-				distance:       5.0,
-				standzeit:      5.0,
-				highSpeed:      5.0,
-				highspeedtime:  "string",
-				avgspeed:       5.0,
-				avgSpeedFastKM: 3,
-				avgSpeedFastMS: 4,
-				avgSpeedSlowKM: 5,
-				avgSpeedSlowMS: 5.6,
-			},
-			Activity{
-				actID:          3,
-				UserID:         4,
-				filename:       "asdsa",
-				activityart:    "sada",
-				comment:        "asdasd",
-				distance:       10.0,
-				standzeit:      5.0,
-				highSpeed:      5.0,
-				highspeedtime:  "string",
-				avgspeed:       5.0,
-				avgSpeedFastKM: 3,
-				avgSpeedFastMS: 4,
-				avgSpeedSlowKM: 5,
-				avgSpeedSlowMS: 5.6,
+
+		var lala = FrontendInf{
+			PageTitle: "Test",
+			Activities: []Activity{{
+				ActID:          1,
+				UserID:         "1",
+				Filename:       "asdsa",
+				Activityart:    "sada",
+				Comment:        "asdasd",
+				Distance:       5.0,
+				Standzeit:      5.0,
+				HighSpeed:      5.0,
+				Highspeedtime:  "string",
+				Avgspeed:       5.0,
+				AvgSpeedFastKM: 3,
+				AvgSpeedFastMS: 4,
+				AvgSpeedSlowKM: 5,
+				AvgSpeedSlowMS: 5.6}, {
+				ActID:          3,
+				UserID:         "4",
+				Filename:       "asdsa",
+				Activityart:    "sada",
+				Comment:        "asdasd",
+				Distance:       10.0,
+				Standzeit:      5.0,
+				HighSpeed:      5.0,
+				Highspeedtime:  "string",
+				Avgspeed:       5.0,
+				AvgSpeedFastKM: 3,
+				AvgSpeedFastMS: 4,
+				AvgSpeedSlowKM: 5,
+				AvgSpeedSlowMS: 5.6},
 			},
 		}
-		template.Execute(w, lala)
+		tmpl.Execute(w, lala)
 	}
 }
 
@@ -122,33 +127,37 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	/*cookie, err := r.Cookie("auth")
+	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
-	*/
-	r.ParseMultipartForm(10 << 20)
-	file, handler, err := r.FormFile("datei")
-	if err != nil {
-		fmt.Println(file, "Error Retrieving the File")
-		fmt.Println(err, handler)
-		return
+
+		r.ParseMultipartForm(10 << 20)
+		file, handler, err := r.FormFile("datei")
+		if err != nil {
+			fmt.Println(file, "Error Retrieving the File")
+			fmt.Println(err, handler)
+			return
+		}
+		defer file.Close()
+		activity := r.FormValue("activity")
+		kommentare := r.FormValue("kommentare")
+		tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tempFile.Close()
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//buffer,err := file.Read(make([]byte, 512))
+		if err != nil {
+
+		}
+		tempFile.Write(fileBytes)
+		uploadfile(tempFile.Name(), activity, kommentare, cookie.Value)
+		http.Redirect(w, r, "/landing.html", http.StatusFound)
 	}
-	defer file.Close()
-	activity := r.FormValue("activity")
-	kommentare := r.FormValue("kommentare")
-	tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer tempFile.Close()
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-	tempFile.Write(fileBytes)
-	uploadfile(tempFile.Name(), activity, kommentare)
-	http.Redirect(w, r, "/landing.html", http.StatusFound)
-	//}
 }
