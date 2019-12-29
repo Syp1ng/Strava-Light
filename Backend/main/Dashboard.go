@@ -1,6 +1,7 @@
 package main
 
 func getDataForUser(uID int) []Activity {
+	//from dbLocationActivity
 	var lala = []Activity{
 		Activity{
 			actID:          1,

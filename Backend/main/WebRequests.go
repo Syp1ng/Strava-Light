@@ -14,10 +14,20 @@ func SetupLinks() {
 	http.HandleFunc("/loginHandler", loginHandler)
 	http.HandleFunc("/uploadHandler", uploadHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
+	http.HandleFunc("/logout", logoutHandler)
 
 	//http.ListenAndServe(":80", nil)
 	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
+}
 
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	oldCookie, err := r.Cookie("auth")
+	if err == nil {
+		delSessionKey(oldCookie.Value)
+		cookie := http.Cookie{Name: "auth", Value: ""}
+		http.SetCookie(w, &cookie)
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +36,8 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
+
+		//hier geht net scheißdreck
 		template, error := template.ParseFiles("Frontend/dashboardTemplate.html")
 		fmt.Println(error)
 		var lala = []Activity{
@@ -62,7 +74,6 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 				avgSpeedSlowMS: 5.6,
 			},
 		}
-
 		template.Execute(w, lala)
 	}
 }
@@ -91,7 +102,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
 	pass := r.Form.Get("password")
 	userName := r.Form.Get("username")
 	check, status := login(userName, pass)

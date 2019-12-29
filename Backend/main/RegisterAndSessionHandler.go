@@ -20,10 +20,10 @@ type sessionKeyInfo struct {
 }
 
 //Settings
-var sessionKeyExpires time.Duration = 24 * 7
-var sessionKeyLen int = 50
-var saltLen int = 10
-var dbLocation string = "DataStorage/UserDataDB.csv"
+var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
+var sessionKeyLen int = 50                           //length of the session Key
+var saltLen int = 10                                 //Length of the salt for the Password
+var dbLocation string = "DataStorage/UserDataDB.csv" //Path to the UserData
 
 var allSessions map[string]sessionKeyInfo
 var userDataMap map[int]userData
@@ -35,10 +35,12 @@ type userData struct {
 	password string
 }
 
+//Function to get the userID from the sessionKey | checks vor valid SessionKey is done before calling that function
 func getUID(sessionKey string) int {
 	return allSessions[sessionKey].forUser
 }
 
+//checks if a sessionkey is valid and not expired
 func checkSessionKey(sessionKey string) bool {
 	fmt.Println(sessionKey)
 	info, exists := allSessions[sessionKey]
@@ -53,6 +55,8 @@ func checkSessionKey(sessionKey string) bool {
 	fmt.Println("sesssion not valid")
 	return false
 }
+
+//function which returns a sessionkey and saves the key on server side in a map, with more details
 func generateSessionKey(userID int) string {
 	sessionKey := getRandomString(sessionKeyLen)
 	expiresOn := time.Now().Add(time.Hour * sessionKeyExpires)
@@ -63,6 +67,12 @@ func generateSessionKey(userID int) string {
 	return sessionKey //base64.StdEncoding.EncodeToString([]byte(sessionKey))
 }
 
+//deletes a sessionkey / makes it invalid
+func delSessionKey(sessionKey string) {
+	delete(allSessions, sessionKey)
+}
+
+//Function which returns a String of a costum length from a charset
 func getRandomString(keyLen int) string {
 	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	var generatedKey string
@@ -72,6 +82,7 @@ func getRandomString(keyLen int) string {
 	return generatedKey
 }
 
+//Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
 	userData, error := os.Open(dbLocation)
 	if error == nil {
@@ -95,6 +106,7 @@ func login(userName string, password string) (bool, string) {
 	return false, "Email unknown"
 }
 
+//function to compare the cleartext Password from User with the hashed Password form the DB
 func comparePasswords(userInputPass, dBPassAndSalt string) bool {
 	hashAlgo := sha512.New()
 	dBPassAndSaltArray := strings.Split(dBPassAndSalt, ":")
@@ -104,6 +116,8 @@ func comparePasswords(userInputPass, dBPassAndSalt string) bool {
 	}
 	return false
 }
+
+//takes the password and adds a salt, and returns the hash of this with the salt after the :
 func hashPassword(password string) string {
 	hashAlgo := sha512.New()
 	salt := getRandomString(saltLen)
