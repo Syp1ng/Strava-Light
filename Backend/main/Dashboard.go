@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -99,7 +100,7 @@ func getDataForUser(uID int) []Activity {
 }
 
 func removeActivity(uID int, activityID int) {
-
+	fmt.Println("deleting activity" + strconv.Itoa(activityID) + " from user " + strconv.Itoa(uID))
 }
 func editActivity(activity Activity) {
 

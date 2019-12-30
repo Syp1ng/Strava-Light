@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="jquery-3.4.1.min.js"></script>
     <meta charset="utf-8"/>
     <title>Dashboard</title>
 </head>
@@ -22,13 +23,19 @@
 
 <script>
     function remove(){
+        var actID = $(event.target).parent().parent()[0].firstElementChild.textContent;
+        alert(actID);
+        $(event.target).parent().parent().remove()
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "/remove?aID=" + 1, false );
-        xmlHttp.send();
+        var data = new FormData();
+        data.append('actid', actID);
+        xmlHttp.open( "POST", "/removeActivity");
+        //xmlHttp.setRequestHeader("Content-Type", "multipart/form-data");
+        xmlHttp.send(data);
     }
     function edit(){
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "Post", "/edit", false );
+        xmlHttp.open( "Post", "/edit");
         xmlHttp.send();
     }
 </script>

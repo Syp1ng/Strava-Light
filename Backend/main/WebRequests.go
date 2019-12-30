@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,6 +19,7 @@ func SetupLinks() {
 	http.HandleFunc("/loginHandler", loginHandler)
 	http.HandleFunc("/uploadHandler", uploadHandler)
 	http.HandleFunc("/logout", logoutHandler)
+	http.HandleFunc("/removeActivity", removeHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
@@ -53,7 +55,20 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
-		removeActivity(getUID(cookie.Value), 1)
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+
+		//////////////why the fuck activityIDString is empty = ""
+
+		activityIDString := r.Form.Get("actid")
+		fmt.Println("text?" + activityIDString)
+		activityID, err := strconv.Atoi(activityIDString)
+		fmt.Println(err)
+		if err == nil {
+			removeActivity(getUID(cookie.Value), activityID)
+		}
 	}
 }
 
