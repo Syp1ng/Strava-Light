@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Neue Aktivität hochladen</h1>
-<form  enctype="multipart/form-data" action="https://localhost/uploadHandler" method="post">
+<form  enctype="multipart/form-data" action="uploadHandler" method="post">
     <label>Art der Aktivität:</label><br>
     <select name="activity" size="2" required="required">
         <option>Laufen</option>
@@ -20,7 +20,18 @@
 </form>
 <h1>Ihre Aktivitäten</h1>
 
-
+<script>
+    function remove(){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "/remove?aID=" + 1, false );
+        xmlHttp.send();
+    }
+    function edit(){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "Post", "/edit", false );
+        xmlHttp.send();
+    }
+</script>
 <table>
   <tr>
     <th>ActivityID</th>
@@ -50,7 +61,7 @@
         <td>{{.AvgSpeedFastMS}} M/s</td>
         <td>{{.AvgSpeedSlowKM}}</td>
         <td>{{.AvgSpeedSlowMS}} M/s</td>
-        <td><button>Edit</button><button>Delete</button></td>
+        <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button></td>
     </tr>
     {{end}}
    <tr>

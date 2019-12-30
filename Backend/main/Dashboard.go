@@ -98,6 +98,13 @@ func getDataForUser(uID int) []Activity {
 
 }
 
+func removeActivity(uID int, activityID int) {
+
+}
+func editActivity(activity Activity) {
+
+}
+
 /*
 const DashBoardView = "<!DOCTYPE html>" +
 	"<html>" +
