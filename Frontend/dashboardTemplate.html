@@ -30,13 +30,19 @@
         var data = new FormData();
         data.append('actid', actID);
         xmlHttp.open( "POST", "/removeActivity");
-        //xmlHttp.setRequestHeader("Content-Type", "multipart/form-data");
-        xmlHttp.send(data);
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xmlHttp.send("actid="+actID);
     }
     function edit(){
+        var actID = $(event.target).parent().parent()[0].firstElementChild.textContent;
+        alert(actID);
+        $(event.target).parent().parent().remove()
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "Post", "/edit");
-        xmlHttp.send();
+        var data = new FormData();
+        data.append('actid', actID);
+        xmlHttp.open( "POST", "/edit");
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xmlHttp.send("actid="+actID);
     }
 </script>
 <table>
