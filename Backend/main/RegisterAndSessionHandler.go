@@ -20,10 +20,10 @@ type sessionKeyInfo struct {
 }
 
 //Settings
-var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
-var sessionKeyLen int = 50                           //length of the session Key
-var saltLen int = 10                                 //Length of the salt for the Password
-var dbLocation string = "DataStorage/UserDataDB.csv" //Path to the UserData
+var sessionKeyExpires time.Duration = 24 * 7               //how long the session Key is valid
+var sessionKeyLen int = 50                                 //length of the session Key
+var saltLen int = 10                                       //Length of the salt for the Password
+var dbLocation string = "../../DataStorage/UserDataDB.csv" //Path to the UserData
 
 var allSessions map[string]sessionKeyInfo
 var userDataMap map[int]userData
@@ -186,5 +186,16 @@ func readDB() {
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func dropTable() {
+	var file, err = os.OpenFile(dbLocation, os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println("error reading file")
+	}
+	_, err = file.WriteString("asasasasas")
+	if err != nil {
+		fmt.Println("error writing file")
 	}
 }

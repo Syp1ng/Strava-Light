@@ -9,6 +9,7 @@ func main() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 	SetupLinks()
+	dropTable()
 	/* for later
 	var port = flag.Int("port", 443, "Port for Webserver")
 	var saltLen = flag.Int("saltLen", 1234, "Length of the salt for the Password")
