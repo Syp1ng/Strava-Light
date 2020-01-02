@@ -20,10 +20,10 @@ type sessionKeyInfo struct {
 }
 
 //Settings
-var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
-var sessionKeyLen int = 50                           //length of the session Key
-var saltLen int = 10                                 //Length of the salt for the Password
-var dbLocation string = "DataStorage/UserDataDB.csv" //Path to the UserData
+var sessionKeyExpires time.Duration = 24 * 7               //how long the session Key is valid
+var sessionKeyLen int = 50                                 //length of the session Key
+var saltLen int = 10                                       //Length of the salt for the Password
+var dbLocation string = "../../DataStorage/UserDataDB.csv" //Path to the UserData
 
 var allSessions map[string]sessionKeyInfo
 var userDataMap map[int]userData
@@ -85,7 +85,7 @@ func getRandomString(keyLen int) string {
 
 //Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
-	userData, error := os.Open(dbLocation)
+	userData, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0775)
 	if error == nil {
 		reader := csv.NewReader(userData)
 		for {
@@ -156,7 +156,7 @@ func register(userName string, email string, password string, confirmPass string
 
 func appendToDB(user userData) bool {
 	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
-	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
 	if err != nil {
 		return false
 	}

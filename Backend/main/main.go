@@ -8,7 +8,6 @@ func main() {
 	fmt.Println("Webserver Starting")
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
-	dropTable()
 	SetupLinks()
 	/* for later
 	var port = flag.Int("port", 443, "Port for Webserver")
