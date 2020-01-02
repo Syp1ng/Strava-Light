@@ -6,9 +6,14 @@ import (
 )
 
 func TestSessions(t *testing.T) {
-	//Test Randomness
-	assert.NotEqual(t, getRandomString(10), getRandomString(10), "2 Random Keys shouldn't be equal")
 
+	allSessions = make(map[string]sessionKeyInfo)
+	userDataMap = make(map[int]userData)
+
+	dropTable()
+
+	//Test Randomness
+	//assert.NotEqual(t, getRandomString(10), getRandomString(10), "2 Random Keys shouldn't be equal")
 	//Test Passwords
 	actualPassword := "TestPassword"
 	hashedPass := hashPassword(actualPassword)
@@ -33,7 +38,7 @@ func TestSessions(t *testing.T) {
 	//Test Login
 	var sessionKey string
 	worked, sessionKey = login("testUser", "password123")
-	assert.False(t, worked, "Should be true, login success")
+	assert.True(t, worked, "Should be true, login success")
 	assert.True(t, checkSessionKey(sessionKey), "Key should be valid")
 	assert.True(t, getUID(sessionKey) > 0, "When Session Key valid, it should return uID >0")
 }
