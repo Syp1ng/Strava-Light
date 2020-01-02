@@ -9,6 +9,9 @@ func TestSessions(t *testing.T) {
 
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
+
+	dropTable()
+
 	//Test Randomness
 	//assert.NotEqual(t, getRandomString(10), getRandomString(10), "2 Random Keys shouldn't be equal")
 	//Test Passwords
