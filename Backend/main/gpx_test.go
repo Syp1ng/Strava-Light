@@ -9,7 +9,7 @@ import (
 func TestToRad(t *testing.T) {
 	var res = ToRad(180)
 	if res != math.Pi {
-		t.Errorf("Sum was inccorect, got: %f, wanted: %f", res, math.Pi)
+		t.Errorf("Result was inccorect, got: %f, wanted: %f", res, math.Pi)
 	}
 }
 func TestDistanceBetweenToPoints(t *testing.T) {
