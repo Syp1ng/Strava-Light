@@ -34,15 +34,28 @@
         xmlHttp.send("actid="+actID);
     }
     function edit(){
-        var actID = $(event.target).parent().parent()[0].firstElementChild.textContent;
-        alert(actID);
-        $(event.target).parent().parent().remove()
-        var xmlHttp = new XMLHttpRequest();
-        var data = new FormData();
-        data.append('actid', actID);
-        xmlHttp.open( "POST", "/edit");
-        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        xmlHttp.send("actid="+actID);
+        var actID = $(event.target).parent().parent(0).children(0)[0];
+        var actArt = $(event.target).parent().parent(0).children(0)[1];
+        var comment = $(event.target).parent().parent(0).children(0)[2];
+        var button = $(event.target);
+        if (button[0].innerText=="speichern"){
+            var xmlHttp = new XMLHttpRequest();
+            var data = new FormData();
+            data.append('actid', actID);
+            xmlHttp.open( "POST", "/edit");
+            xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xmlHttp.send("actid="+actID.innerText +"&comment="+comment.innerText+"&comment="+comment.innerText);
+
+            actArt.setAttribute('contenteditable','false');
+            comment.setAttribute('contenteditable','false');
+            button[0].innerText = "edit";
+
+        }else{
+            //make editable
+            actArt.setAttribute('contenteditable','true');
+            comment.setAttribute('contenteditable','true');
+            button[0].innerText = "speichern";
+        }
     }
 </script>
 <table>
@@ -62,7 +75,7 @@
   </tr>
     {{range .Activities}}
     <tr>
-        <td>{{.ActID}}</td>
+        <td >{{.ActID}}</td>
         <td>{{.Activityart}}</td>
         <td>{{.Comment}}</td>
         <td>{{.Distance}} km</td>
