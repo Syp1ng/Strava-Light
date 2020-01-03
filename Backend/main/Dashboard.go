@@ -1,14 +1,24 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func getDataForUser(uID int) []Activity {
+	/*readAcivityDB()
+	var length = 0
+	for length = range activityMap {
+		length++
+	}
+
+
+	*/
 	numberoflines := 0
 	activityDataLenght, error := os.Open(dbLocationActivity)
 	if error == nil {
@@ -64,6 +74,31 @@ func getDataForUser(uID int) []Activity {
 }
 
 func removeActivity(uID int, activityID int) {
+	file, err := os.Open(dbLocationActivity)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	f, err := os.OpenFile("DataStorage/Temp.csv", os.O_RDONLY|os.O_CREATE, 0666)
+	if err != nil {
+
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		activity := strings.Split(scanner.Text(), ",")
+		actID, err := strconv.Atoi(activity[0])
+		//userID, err := strconv.Atoi(activity[1])
+		if err != nil {
+
+		}
+		if actID != activityID {
+			f.WriteString(scanner.Text() + "\n")
+		} else {
+			//log.Println("Not allowed to delete")
+		}
+	}
+	os.Rename("Temp.csv", "TEST.csv") //funktiniert nicht ??
 
 }
 func editActivity(activity Activity) {
