@@ -36,7 +36,20 @@
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "POST", "/downloadActivity");
         xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xmlHttp.responseType = 'blob';
+        xmlHttp.onload = function () {
+            var blob = this.response;
+            //var contentDispo = this.getResponseHeader('Content-Disposition');
+            //var fileName = contentDispo.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
+            saveBlob(blob, "File.gpx");
+        }
         xmlHttp.send("actID="+actID);
+    }
+    function saveBlob(blob, fileName) {
+        var a = document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.download = fileName;
+        a.dispatchEvent(new MouseEvent('click'));
     }
     function edit(){
         var actID = $(event.target).parent().parent(0).children(0)[0];

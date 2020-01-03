@@ -123,6 +123,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Length", strconv.Itoa(fileSize))
 				// force it down the client's.....
 				http.ServeContent(w, r, file, time.Now(), bytes.NewReader(downloadBytes))
+
 			}
 
 		}
