@@ -61,45 +61,10 @@ func getDataForUser(uID int) []Activity {
 	}
 	return nil
 
-	//from dbLocationActivity
-	/*var lala = []Activity{
-		Activity{
-			ActID:          1,
-			UserID:         "1",
-			filename:       "asdsa",
-			activityart:    "sada",
-			comment:        "asdasd",
-			distance:       5.0,
-			standzeit:      5.0,
-			highSpeed:      5.0,
-			highspeedtime:  "string",
-			avgspeed:       5.0,
-			avgSpeedFastKM: 3,
-			avgSpeedFastMS: 4,
-			avgSpeedSlowKM: 5,
-			avgSpeedSlowMS: 5.6,
-		},
-		Activity{
-			ActID:          3,
-			UserID:         "4",
-			filename:       "asdsa",
-			activityart:    "sada",
-			comment:        "asdasd",
-			distance:       10.0,
-			standzeit:      5.0,
-			highSpeed:      5.0,
-			highspeedtime:  "string",
-			avgspeed:       5.0,
-			avgSpeedFastKM: 3,
-			avgSpeedFastMS: 4,
-			avgSpeedSlowKM: 5,
-			avgSpeedSlowMS: 5.6,
-		},
-	}*/
-
 }
 
 func removeActivity(uID int, activityID int) {
+
 }
 func editActivity(activity Activity) {
 	fmt.Println(activity.Comment + " " + activity.Activityart)
@@ -109,4 +74,7 @@ func saveNewData(activity []Activity) {
 }
 func search(uID int, comment string) []Activity {
 	return nil
+}
+func downloadActivity(actID int) {
+
 }

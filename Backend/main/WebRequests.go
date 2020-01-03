@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"html/template"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func SetupLinks() {
@@ -18,7 +20,7 @@ func SetupLinks() {
 	http.HandleFunc("/registrationHandler", registerHandler)
 	http.HandleFunc("/loginHandler", loginHandler)
 	http.HandleFunc("/uploadHandler", uploadHandler)
-	//http.HandleFunc("/downloadActivity")
+	http.HandleFunc("/downloadActivity", downloadHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/removeActivity", removeHandler)
 	http.HandleFunc("/editActivity", editHandler)
@@ -85,6 +87,48 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 			removeActivity(getUID(cookie.Value), activityID)
 		}
 	}
+}
+
+func downloadHandler(w http.ResponseWriter, r *http.Request) {
+
+	cookie, err := r.Cookie("auth")
+	if err != nil || checkSessionKey(cookie.Value) == false {
+		fmt.Printf("No cookie or invalid Session")
+		http.Redirect(w, r, "/Login.html", http.StatusFound)
+	} else {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+		activityIDString := r.Form.Get("actID")
+		activityID, err := strconv.Atoi(activityIDString)
+		readAcivityDB()
+		for k := range activityMap {
+			if activityMap[k].ActID == activityID {
+				file := activityMap[k].Filename
+				downloadBytes, err := ioutil.ReadFile(file)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				// set the default MIME type to send
+				mime := http.DetectContentType(downloadBytes)
+
+				fileSize := len(string(downloadBytes))
+
+				// Generate the server headers
+				w.Header().Set("Content-Type", mime)
+				w.Header().Set("Content-Disposition", "attachment; filename="+file+"")
+				w.Header().Set("Content-Length", strconv.Itoa(fileSize))
+				// force it down the client's.....
+				http.ServeContent(w, r, file, time.Now(), bytes.NewReader(downloadBytes))
+			}
+
+		}
+
+	}
+
 }
 
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
