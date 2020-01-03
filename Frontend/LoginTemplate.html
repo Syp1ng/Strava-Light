@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<p style="color:red;font-size:300%;"><b>Fehler: {{.}}</b></p>
+    <form action="/loginHandler" method="post">
+        <label>Username:</label>
+        <input type="text" id ="username" name="username" ><br>
+        <label>Password:</label>
+        <input type="password" id = "password" name="password"><br>
+
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
