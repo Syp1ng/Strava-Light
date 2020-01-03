@@ -9,7 +9,8 @@ var actualPassword = "TestPassword"
 var hashedPass string
 
 func TestHashPassword(t *testing.T) {
-	assert.NotEqual(t, actualPassword, hashPassword(actualPassword), "Should be hashed")
+	hashedPass = hashPassword(actualPassword)
+	assert.NotEqual(t, actualPassword, hashedPass, "Should be hashed")
 }
 func TestComparePasswords(t *testing.T) {
 	hashedPass := hashPassword(actualPassword)

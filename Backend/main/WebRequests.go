@@ -18,8 +18,10 @@ func SetupLinks() {
 	http.HandleFunc("/registrationHandler", registerHandler)
 	http.HandleFunc("/loginHandler", loginHandler)
 	http.HandleFunc("/uploadHandler", uploadHandler)
+	//http.HandleFunc("/downloadActivity")
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/removeActivity", removeHandler)
+	http.HandleFunc("/editActivity", editHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
@@ -46,7 +48,24 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
-		//editActivity()
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+		activityIDString := r.Form.Get("actID")
+		comment := r.Form.Get("comment")
+		activityArt := r.Form.Get("actArt")
+		activityID, err := strconv.Atoi(activityIDString)
+		fmt.Println(err)
+		if err == nil {
+			editetAct := Activity{
+				ActID:       activityID,
+				Comment:     comment,
+				UserID:      getUID(cookie.Value),
+				Activityart: activityArt,
+			}
+			editActivity(editetAct)
+		}
 	}
 }
 func removeHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,11 +78,7 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-
-		//////////////why the fuck activityIDString is empty = ""
-
-		activityIDString := r.Form.Get("actid")
-		fmt.Println("text?" + activityIDString)
+		activityIDString := r.Form.Get("actID")
 		activityID, err := strconv.Atoi(activityIDString)
 		fmt.Println(err)
 		if err == nil {
@@ -102,7 +117,9 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/home", http.StatusFound)
 	} else {
-		fmt.Println(status)
+		tmpl, error := template.ParseFiles("Frontend/RegisterTemplate.html")
+		fmt.Println(error)
+		tmpl.Execute(w, status)
 	}
 }
 
@@ -120,10 +137,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("nice")
 		http.Redirect(w, r, "/home", http.StatusFound)
 	} else {
-		fmt.Println(status)
+		/*fmt.Println(status)
 		http.Error(w,
 			http.StatusText(http.StatusUnauthorized),
-			http.StatusUnauthorized)
+			http.StatusUnauthorized)*/
+		tmpl, error := template.ParseFiles("Frontend/LoginTemplate.html")
+		fmt.Println(error)
+		tmpl.Execute(w, status)
 	}
 
 	//http.Redirect(w, r, "/home", http.StatusFound)

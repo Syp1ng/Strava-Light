@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Strava Registration</title>
+</head>
+<body>
+<p style="color:red;font-size:300%;"><b>Fehler: {{.}}</b></p>
+    <form action="/registrationHandler" method="post">
+        <label>Username:</label>
+        <input type="text" id ="username" name="username" ><br>
+        <label>Email:</label>
+        <input type="email" id ="email" name="email" ><br>
+        <label>Password:</label>
+        <input type="password" id = "password" name="password"><br>
+        <label>Password bestätigen</label>
+        <input type="password" id ="confirmPassword" name = "confirmPassword"> <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
