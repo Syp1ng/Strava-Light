@@ -74,7 +74,7 @@ func delSessionKey(sessionKey string) {
 
 //Function which returns a String of a costum length from a charset
 func getRandomString(keyLen int) string {
-	rand.Seed(time.Now().UnixNano())
+	//rand.Seed(time.Now().UnixNano())
 	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	var generatedKey string
 	for i := 0; i <= keyLen; i++ {
