@@ -107,3 +107,6 @@ func editActivity(activity Activity) {
 func saveNewData(activity []Activity) {
 
 }
+func search(uID int, comment string) []Activity {
+	return nil
+}

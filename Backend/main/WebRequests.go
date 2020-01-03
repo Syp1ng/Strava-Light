@@ -18,6 +18,7 @@ func SetupLinks() {
 	http.HandleFunc("/registrationHandler", registerHandler)
 	http.HandleFunc("/loginHandler", loginHandler)
 	http.HandleFunc("/uploadHandler", uploadHandler)
+	//http.HandleFunc("/downloadActivity")
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/removeActivity", removeHandler)
 	http.HandleFunc("/editActivity", editHandler)
