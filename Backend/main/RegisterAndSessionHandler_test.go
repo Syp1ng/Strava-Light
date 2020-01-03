@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func TestHashPassword(t *testing.T) {
+	actualPassword := "TestPassword"
+	hashedPass := hashPassword(actualPassword)
+	assert.NotEqual(t, actualPassword, hashedPass, "Should be hashed")
+	assert.True(t, comparePasswords(actualPassword, hashedPass), "Compare function of passwords should return true")
+}
+
 func TestSessions(t *testing.T) {
 
 	allSessions = make(map[string]sessionKeyInfo)
@@ -15,10 +22,6 @@ func TestSessions(t *testing.T) {
 	//Test Randomness
 	//assert.NotEqual(t, getRandomString(10), getRandomString(10), "2 Random Keys shouldn't be equal")
 	//Test Passwords
-	actualPassword := "TestPassword"
-	hashedPass := hashPassword(actualPassword)
-	assert.NotEqual(t, actualPassword, hashedPass, "Should be hashed")
-	assert.True(t, comparePasswords(actualPassword, hashedPass), "Compare function of passwords should return true")
 
 	//Test invalid login
 	worked, _ := login("testUser", "password123")
