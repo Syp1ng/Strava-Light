@@ -24,19 +24,45 @@
 <script>
     function remove(){
         var actID = $(event.target).parent().parent()[0].firstElementChild.textContent;
-        alert(actID);
-        $(event.target).parent().parent().remove()
+        $(event.target).parent().parent().remove();
         var xmlHttp = new XMLHttpRequest();
-        var data = new FormData();
-        data.append('actid', actID);
         xmlHttp.open( "POST", "/removeActivity");
-        //xmlHttp.setRequestHeader("Content-Type", "multipart/form-data");
-        xmlHttp.send(data);
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xmlHttp.send("actID="+actID);
+    }
+    function download(){
+        var actID = $(event.target).parent().parent()[0].firstElementChild.textContent;
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "POST", "/downloadActivity");
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xmlHttp.send("actID="+actID);
     }
     function edit(){
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "Post", "/edit");
-        xmlHttp.send();
+        var actID = $(event.target).parent().parent(0).children(0)[0];
+        var actArt = $(event.target).parent().parent(0).children(0)[1];
+        var comment = $(event.target).parent().parent(0).children(0)[2];
+        var button = $(event.target);
+        if (button[0].innerText=="speichern"){
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "POST", "/editActivity");
+            xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xmlHttp.send("actID="+actID.innerText +"&actArt="+actArt.innerText+"&comment="+comment.innerText);
+
+            actArt.setAttribute('contenteditable','false');
+            comment.setAttribute('contenteditable','false');
+            actArt.setAttribute('bgcolor','#FFFFFF');
+            comment.setAttribute('bgcolor','#FFFFFF');
+
+            button[0].innerText = "edit";
+
+        }else{
+            //make editable
+            actArt.setAttribute('contenteditable','true');
+            comment.setAttribute('contenteditable','true');
+            actArt.setAttribute('bgcolor','#FF0000');
+            comment.setAttribute('bgcolor','#FF0000');
+            button[0].innerText = "speichern";
+        }
     }
 </script>
 <table>
@@ -68,7 +94,7 @@
         <td>{{.AvgSpeedFastMS}} M/s</td>
         <td>{{.AvgSpeedSlowKM}}</td>
         <td>{{.AvgSpeedSlowMS}} M/s</td>
-        <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button></td>
+        <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button><button onclick="download()">download</button></td>
     </tr>
     {{end}}
    <tr>

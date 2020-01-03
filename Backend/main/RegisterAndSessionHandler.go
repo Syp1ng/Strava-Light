@@ -74,7 +74,7 @@ func delSessionKey(sessionKey string) {
 
 //Function which returns a String of a costum length from a charset
 func getRandomString(keyLen int) string {
-	rand.Seed(time.Now().UnixNano())
+	//rand.Seed(time.Now().UnixNano())
 	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	var generatedKey string
 	for i := 0; i <= keyLen; i++ {
@@ -85,7 +85,7 @@ func getRandomString(keyLen int) string {
 
 //Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
-	userData, error := os.Open(dbLocation)
+	userData, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0775)
 	if error == nil {
 		reader := csv.NewReader(userData)
 		for {
@@ -104,7 +104,7 @@ func login(userName string, password string) (bool, string) {
 			}
 		}
 	}
-	return false, "Email unknown"
+	return false, "Username unknown"
 }
 
 //function to compare the cleartext Password from User with the hashed Password form the DB
@@ -136,8 +136,8 @@ func register(userName string, email string, password string, confirmPass string
 	readDB()
 	var maxID int = 0
 	for k, v := range userDataMap {
-		if email == v.email {
-			return false, "Account exist with that email"
+		if userName == v.userName {
+			return false, "Account exist with that Username"
 		}
 		if k > maxID {
 			maxID = k
@@ -156,7 +156,7 @@ func register(userName string, email string, password string, confirmPass string
 
 func appendToDB(user userData) bool {
 	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
-	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
 	if err != nil {
 		return false
 	}
@@ -187,4 +187,16 @@ func readDB() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func dropTable() {
+	err := os.Remove(dbLocation)
+	if err != nil {
+		fmt.Println("cannot detele file")
+	}
+	_, err2 := os.Create(dbLocation)
+	if err2 != nil {
+		fmt.Println("cannot create file")
+	}
+
 }
