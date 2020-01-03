@@ -100,8 +100,10 @@ func getDataForUser(uID int) []Activity {
 }
 
 func removeActivity(uID int, activityID int) {
-	fmt.Println("deleting activity" + strconv.Itoa(activityID) + " from user " + strconv.Itoa(uID))
 }
 func editActivity(activity Activity) {
 	fmt.Println(activity.Comment + " " + activity.Activityart)
+}
+func saveNewData(activity []Activity) {
+
 }

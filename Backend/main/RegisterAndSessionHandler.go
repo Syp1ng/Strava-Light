@@ -104,7 +104,7 @@ func login(userName string, password string) (bool, string) {
 			}
 		}
 	}
-	return false, "Email unknown"
+	return false, "Username unknown"
 }
 
 //function to compare the cleartext Password from User with the hashed Password form the DB
@@ -136,8 +136,8 @@ func register(userName string, email string, password string, confirmPass string
 	readDB()
 	var maxID int = 0
 	for k, v := range userDataMap {
-		if email == v.email {
-			return false, "Account exist with that email"
+		if userName == v.userName {
+			return false, "Account exist with that Username"
 		}
 		if k > maxID {
 			maxID = k
