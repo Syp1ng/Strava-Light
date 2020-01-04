@@ -81,7 +81,7 @@
 </script>
 <table>
   <tr>
-    <th>ActivityID</th>
+    <th style="visibility:hidden">ActivityID</th>
     <th>Art der Aktivität</th>
     <th>Kommentar</th>
     <th>Gesamtdistanz</th>
@@ -96,7 +96,7 @@
   </tr>
     {{range .Activities}}
     <tr>
-        <td>{{.ActID}}</td>
+        <td style="visibility:hidden">{{.ActID}}</td>
         <td>{{.Activityart}}</td>
         <td>{{.Comment}}</td>
         <td>{{.Distance}} km</td>
