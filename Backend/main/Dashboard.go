@@ -181,6 +181,15 @@ func saveNewData(activity []Activity) {
 
 }
 func search(uID int, comment string) []Activity {
+	//var commentaryMap map[int]Activity
+	//commentaryMap = make(map[int]Activity)
+	readAcivityDB()
+	for key, value := range activityMap {
+		if value.UserID == uID && strings.Contains(value.Comment, comment) {
+			fmt.Println("Key:", key, "Value:", value)
+			//commentaryMap[key,value] = activityMap[key,value]
+		}
+	}
 	return nil
 }
 func downloadActivity(actID int) {
