@@ -99,7 +99,10 @@ func removeActivity(uID int, activityID int) {
 		if actID != activityID {
 			f.WriteString(scanner.Text() + "\n")
 		} else {
-			//log.Println("Not allowed to delete")
+			var error = os.Remove(activity[2])
+			if error != nil {
+				log.Println("Can't find the file ", error)
+			}
 		}
 	}
 	file.Close()

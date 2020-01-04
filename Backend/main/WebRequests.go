@@ -110,6 +110,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 
 				if err != nil {
 					fmt.Println(err)
+
 				}
 
 				// set the default MIME type to send
