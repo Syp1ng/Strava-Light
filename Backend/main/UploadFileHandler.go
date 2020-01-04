@@ -102,3 +102,8 @@ func readAcivityDB() {
 		log.Fatal(err)
 	}
 }
+
+func searchInComment(searching string) {
+	readAcivityDB()
+	fmt.Println(strings.Contains("Assume", "Ass"))
+}
