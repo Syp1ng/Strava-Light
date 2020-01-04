@@ -181,15 +181,17 @@ func saveNewData(activity []Activity) {
 
 }
 func search(uID int, comment string) []Activity {
-	//var commentaryMap map[int]Activity
-	//commentaryMap = make(map[int]Activity)
+	var commentaryMap map[int]Activity
+	commentaryMap = make(map[int]Activity)
 	readAcivityDB()
 	for key, value := range activityMap {
 		if value.UserID == uID && strings.Contains(value.Comment, comment) {
 			fmt.Println("Key:", key, "Value:", value)
-			//commentaryMap[key,value] = activityMap[key,value]
+			commentaryMap[key] = value
 		}
 	}
+	//how to convert map into Acitivtiy Array ? maybe:https://stackoverflow.com/questions/45570947/creating-an-array-from-the-maps-key-and-values-in-go/45571006
+	//What to return ?
 	return nil
 }
 func downloadActivity(actID int) {
