@@ -13,9 +13,6 @@
             padding: 4px;
             padding-left: 10px;
         }
-        suche{
-            visibility: hidden;
-        }
     </style>
 </head>
 <body>
@@ -58,10 +55,6 @@
         }
         xmlHttp.send("actID="+actID);
     }
-    function suche() {
-        document.getElementById("suche").style.visibility = "visible";
-
-    }
     function saveBlob(blob, fileName) {
         var a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
@@ -100,9 +93,8 @@
     <label>Suche eingeben:
     </label>
     <input name="searchField" type="text">
-    <button id="Suche" onclick="suche()">Suchen</button>
+    <button name="Suche">Suchen</button>
 </form>
-<div id="suche">Suche nach {{.Suche}} ergab folgende Ergebnisse:  <button onclick="reset()">Suche löschen</button></div>
 <div style="padding-top: 20px">
     {{range .Activities}}
     <div class="activities">
@@ -135,6 +127,42 @@
     </div>
     {{end}}
 </div>
+<!---
+<table>
+  <tr>
+    <th>ActivityID</th>
+    <th>Art der Aktivität</th>
+    <th>Kommentar</th>
+    <th>Gesamtdistanz</th>
+    <th>Standzeit</th>
+	<th>Maximalgeschwindigkeit</th>
+	<th>Maximalgeschwindigkeit am Zeitpunkt</th>
+    <th>Durchschnittsgeschwindigkeit</th>
+    <th>schnellster KM</th>
+    <th>Durchschnittsgeschwindigkeit schnellster Kilometer</th>
+    <th>langsamster KM</th>
+    <th>Durchschnittsgeschwindigkeit langsamster Kilometer</th>
 
+  </tr>
+    {{range .Activities}}
+    <tr>
+        <td>{{.ActID}}</td>
+        <td>{{.Activityart}}</td>
+        <td>{{.Comment}}</td>
+        <td>{{.Distance}} km</td>
+        <td>{{.Standzeit}} s</td>
+        <td>{{.HighSpeed}} M/s</td>
+        <td>{{.Highspeedtime}}</td>
+        <td>{{.Avgspeed}} M/s</td>
+        <td>{{.AvgSpeedFastKM}}</td>
+        <td>{{.AvgSpeedFastMS}} M/s</td>
+        <td>{{.AvgSpeedSlowKM}}</td>
+        <td>{{.AvgSpeedSlowMS}} M/s</td>
+        <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button><button onclick="download()">download</button></td>
+    </tr>
+    {{end}}
+   <tr>
+</table>
+--->
 </body>
 </html>
