@@ -81,7 +81,7 @@
 </script>
 <table>
   <tr>
-    <th style="visibility:hidden">ActivityID</th>
+    <th>ActivityID</th>
     <th>Art der Aktivität</th>
     <th>Kommentar</th>
     <th>Gesamtdistanz</th>
@@ -89,14 +89,15 @@
 	<th>Maximalgeschwindigkeit</th>
 	<th>Maximalgeschwindigkeit am Zeitpunkt</th>
     <th>Durchschnittsgeschwindigkeit</th>
+    <th>schnellster KM</th>
     <th>Durchschnittsgeschwindigkeit schnellster Kilometer</th>
-	<th>schnellster KM</th>
-    <th>Durchschnittsgeschwindigkeit langsamster Kilometer</th>
     <th>langsamster KM</th>
+    <th>Durchschnittsgeschwindigkeit langsamster Kilometer</th>
+
   </tr>
     {{range .Activities}}
     <tr>
-        <td style="visibility:hidden">{{.ActID}}</td>
+        <td>{{.ActID}}</td>
         <td>{{.Activityart}}</td>
         <td>{{.Comment}}</td>
         <td>{{.Distance}} km</td>
