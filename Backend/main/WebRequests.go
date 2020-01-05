@@ -297,35 +297,12 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
-	} else { /*
-			err := r.ParseForm()
-			if err != nil {
-				log.Println(err)
-			}
-			activityIDString := r.Form.Get("actID")
-			activityID, err := strconv.Atoi(activityIDString)
-			readAcivityDB()              //Funktion zum aktualisieren der activityMap
-			for k := range activityMap { //aktuelle acivityMap nach der zu donwloadenden Datei durchsuchen
-				if activityMap[k].ActID == activityID {
-					file := activityMap[k].Filename             //Filename/Filepfad auslesen
-					downloadBytes, err := ioutil.ReadFile(file) //in Bytes zur Übermittlung ans Frontend packen
+	} else {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+		//pass := r.Form.Get("password")
 
-					if err != nil {
-						fmt.Println(err)
-
-					}
-
-					mime := http.DetectContentType(downloadBytes) //Übermittlung ans Frontend
-
-					fileSize := len(string(downloadBytes))
-
-					// Festlegen der ResponseWriter
-					w.Header().Set("Content-Type", mime)
-					w.Header().Set("Content-Disposition", "attachment; filename="+file+"")
-					w.Header().Set("Content-Length", strconv.Itoa(fileSize))
-					// force it down the client's.....
-					http.ServeContent(w, r, file, time.Now(), bytes.NewReader(downloadBytes))
-				}
-			}*/
 	}
 }
