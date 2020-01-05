@@ -24,7 +24,7 @@ func SetupLinks() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/removeActivity", removeHandler)
 	http.HandleFunc("/editActivity", editHandler)
-	http.HandleFunc("/searchComment", searchCommentHandler)
+	http.HandleFunc("/searchCommentHandler", searchCommentHandler)
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
@@ -302,7 +302,13 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		//pass := r.Form.Get("password")
-
+		searchString := r.Form.Get("searchField")
+		search(getUID(cookie.Value), searchString)
+		var dataToTemplate = FrontendInfos{
+			Activities: commentaryMap,
+		}
+		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
+		fmt.Println(error)
+		tmpl.Execute(w, dataToTemplate)
 	}
 }
