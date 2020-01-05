@@ -11,6 +11,7 @@ import (
 )
 
 var activityMapForUser map[int]Activity
+var commentaryMap map[int]Activity
 
 func getDataForUser(uID int) map[int]Activity {
 	var position = 0
@@ -148,7 +149,6 @@ func saveNewData(activity []Activity) {
 //FullTextSearch
 func search(uID int, comment string) map[int]Activity {
 	var position = 0
-	var commentaryMap map[int]Activity
 	commentaryMap = make(map[int]Activity)
 	readAcivityDB()
 	for _, value := range activityMap {
