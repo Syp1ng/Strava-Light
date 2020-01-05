@@ -30,7 +30,7 @@ func SetupLinks() {
 	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
 }
 
-type FrontendInf struct {
+type FrontendInfos struct {
 	Activities map[int]Activity
 }
 
@@ -45,16 +45,17 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
+	//Überprüfen ob die Sitzung des Nutzers noch gültig ist
 	cookie, err := r.Cookie("auth")
-	if err != nil || checkSessionKey(cookie.Value) == false {
+	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
-	} else {
+	} else { //Wenn gültig übermittlete Form auswerten
 		err := r.ParseForm()
 		if err != nil {
 			log.Println(err)
 		}
-		activityIDString := r.Form.Get("actID")
+		activityIDString := r.Form.Get("actID") //Auslesen der geänderten Werte
 		comment := r.Form.Get("comment")
 		activityArt := r.Form.Get("actArt")
 		activityID, err := strconv.Atoi(activityIDString)
@@ -66,13 +67,14 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 				UserID:      getUID(cookie.Value),
 				Activityart: activityArt,
 			}
-			editActivity(editetAct)
+			editActivity(editetAct) //Funktion die die bearbeiteten Werte in der CSV Datei ändert
 		}
 	}
 }
 func removeHandler(w http.ResponseWriter, r *http.Request) {
+	//Überprüfen ob die Sitzung des Nutzers noch gültig ist
 	cookie, err := r.Cookie("auth")
-	if err != nil || checkSessionKey(cookie.Value) == false {
+	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
@@ -80,19 +82,19 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		activityIDString := r.Form.Get("actID")
+		activityIDString := r.Form.Get("actID") //Auslesen der zu löschenden Aktivität durch ID
 		activityID, err := strconv.Atoi(activityIDString)
 		fmt.Println(err)
 		if err == nil {
-			removeActivity(getUID(cookie.Value), activityID)
+			removeActivity(getUID(cookie.Value), activityID) //Funktion die die Zeile in der CSV Datei löscht
 		}
 	}
 }
 
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
-
+	//Überprüfen ob die Sitzung des Nutzers noch gültig ist
 	cookie, err := r.Cookie("auth")
-	if err != nil || checkSessionKey(cookie.Value) == false {
+	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
@@ -102,46 +104,44 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		activityIDString := r.Form.Get("actID")
 		activityID, err := strconv.Atoi(activityIDString)
-		readAcivityDB()
-		for k := range activityMap {
+		readAcivityDB()              //Funktion zum aktualisieren der activityMap
+		for k := range activityMap { //aktuelle acivityMap nach der zu donwloadenden Datei durchsuchen
 			if activityMap[k].ActID == activityID {
-				file := activityMap[k].Filename
-				downloadBytes, err := ioutil.ReadFile(file)
+				file := activityMap[k].Filename             //Filename/Filepfad auslesen
+				downloadBytes, err := ioutil.ReadFile(file) //in Bytes zur Übermittlung ans Frontend packen
 
 				if err != nil {
 					fmt.Println(err)
 
 				}
 
-				// set the default MIME type to send
-				mime := http.DetectContentType(downloadBytes)
+				mime := http.DetectContentType(downloadBytes) //Übermittlung ans Frontend
 
 				fileSize := len(string(downloadBytes))
 
-				// Generate the server headers
+				// Festlegen der ResponseWriter
 				w.Header().Set("Content-Type", mime)
 				w.Header().Set("Content-Disposition", "attachment; filename="+file+"")
 				w.Header().Set("Content-Length", strconv.Itoa(fileSize))
 				// force it down the client's.....
 				http.ServeContent(w, r, file, time.Now(), bytes.NewReader(downloadBytes))
-
 			}
-
 		}
-
 	}
-
 }
 
+//Funktion zum Aktualisieren der Aktivitäten auf dem Frontend
 func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	//Überprüfen ob die Sitzung des Nutzers noch gültig ist
 	cookie, err := r.Cookie("auth")
-	if err != nil || checkSessionKey(cookie.Value) == false {
+	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/Login.html", http.StatusFound)
 	} else {
 		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
 		fmt.Println(error)
-		var dataToTemplate = FrontendInf{
+
+		var dataToTemplate = FrontendInfos{
 			Activities: getDataForUser(getUID(cookie.Value)),
 		}
 		tmpl.Execute(w, dataToTemplate)
@@ -191,42 +191,44 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(error)
 		tmpl.Execute(w, status)
 	}
-
 	//http.Redirect(w, r, "/home", http.StatusFound)
-
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	//Überprüfen ob die Sitzung des Nutzers noch gültig ist
 	cookie, err := r.Cookie("auth")
-	if err != nil || checkSessionKey(cookie.Value) == false {
+	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 
-		r.ParseMultipartForm(10 << 20)
-		file, handler, err := r.FormFile("datei")
+		r.ParseMultipartForm(10 << 20)            //Auswertung der Form des Frontends
+		file, handler, err := r.FormFile("datei") //Überprüfen ob der Nutzer eine Datei hochgeladen hat
 		if err != nil {
 			fmt.Println(file, "Error Retrieving the File")
 			fmt.Println(err, handler)
 			return
 		}
 		defer file.Close()
-		if strings.HasSuffix(handler.Filename, ".gpx") {
+		if strings.HasSuffix(handler.Filename, ".gpx") { //Überprüfen ob es sich um eine GPX Datei handelt
 			activity := r.FormValue("activity")
 			kommentare := r.FormValue("kommentare")
+
+			//Datei erstellen, in die die hochgeladene GPX Datei kopiert wird
 			tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer tempFile.Close()
-			fileBytes, err := ioutil.ReadAll(file)
+			fileBytes, err := ioutil.ReadAll(file) //Hochgeladene GPX Datei in Bytes packen
 			if err != nil {
 				fmt.Println(err)
 			}
-			tempFile.Write(fileBytes)
-			uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value))
+			tempFile.Write(fileBytes)                                               //Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
+			uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value)) //Funktion die die hochgeladene Datei auswertet
 
-		} else if strings.HasSuffix(handler.Filename, ".zip") {
+		} else if strings.HasSuffix(handler.Filename, ".zip") { //Überprüfen ob es sich um eine ZIP Datei handelt
+			//Temporäre Zip Datei erstellen, in die die hochgeladene Zip Datei kopiert wird
 			tempFile, err := ioutil.TempFile("DataStorage/ZIP_Files", "zipDatei*.zip")
 			if err != nil {
 				fmt.Println(err)
@@ -236,31 +238,32 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println(err)
 			}
-			tempFile.Write(fileBytes)
-			gpxFiles, err := Unzip(tempFile.Name(), getUID(cookie.Value), r.FormValue("activity"), r.FormValue("kommentare"))
-			if err != nil {
-				log.Fatal(err)
-			}
-			log.Println(gpxFiles)
+			tempFile.Write(fileBytes) //Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
+
+			//Funktion zum Entpacken der Datei
+			Unzip(tempFile.Name(), getUID(cookie.Value), r.FormValue("activity"), r.FormValue("kommentare"))
 		} else {
 			fmt.Println("No GPX or ZIP Data")
 		}
+		//Funktion zum Aktualisieren der Aktivitäten auf dem Frontend
 		viewDashboardHandler(w, r)
 
 	}
 }
-func Unzip(src string, uid int, actactivity string, komm string) ([]string, error) {
+func Unzip(src string, uid int, actactivity string, komm string) {
 	zipReader, _ := zip.OpenReader(src)
+	//Zip Datei öffenen und Datei für Datei durchgehen
 	for _, file := range zipReader.Reader.File {
 		zippedFile, err := file.Open()
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer zippedFile.Close()
-		if file.FileInfo().IsDir() {
+		if file.FileInfo().IsDir() { //Der erste Durchlauf ist nur das Verzeichnis
 			log.Println("isDir")
 		} else {
-			if strings.HasSuffix(file.Name, ".gpx") {
+			if strings.HasSuffix(file.Name, ".gpx") { //Überprüfen ob es sich um eine GPX Datei handelt
+				//Datei erstellen, in die die hochgeladene GPX Datei kopiert wird
 				tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
 				if err != nil {
 					fmt.Println(err)
@@ -277,14 +280,12 @@ func Unzip(src string, uid int, actactivity string, komm string) ([]string, erro
 				}
 				defer outputFile.Close()
 
-				_, err = io.Copy(outputFile, zippedFile)
+				_, err = io.Copy(outputFile, zippedFile) //Daten in erstellete Datei kopieren, welche im DataStorage gespeichert wird
 				if err != nil {
 					log.Fatal(err)
 				}
-				uploadfile(tempFile.Name(), actactivity, komm, uid)
+				uploadfile(tempFile.Name(), actactivity, komm, uid) //Funktion die die aktuelle GPX Datei auswertet
 			}
 		}
 	}
-
-	return nil, nil
 }

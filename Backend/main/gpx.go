@@ -9,14 +9,8 @@ import (
 	"time"
 )
 
-//http://www.movable-type.co.uk/scripts/latlong.html
-
-//func main() {
-//parseDoc("GPX_Files/2019-09-21_15-54.gpx")
-//}
-
-type Gpx struct {
-	XMLName   xml.Name `xml:"gpx"`
+type Gpx struct { //Benötigter Aufbau einer GPX Datei
+	XMLName   xml.Name `xml:"gpx"` //Nicht benötigte Struktur wurde weggelassen
 	Version   string   `xml:"version,attr"`
 	Creator   string   `xml:"creator,attr"`
 	Timestamp string   `xml:"metadata>time,omitempty"`
@@ -39,70 +33,79 @@ type GpxPoint struct {
 
 var gpxDocuments []*Gpx
 
-func parseDoc(act Activity) Activity {
+func parseDoc(act Activity) Activity { //Funktion, die die hochgeladene Datei auswertet.
 
-	gpxDoc, err := parseFile(act.Filename)
+	gpxDoc, err := parseFile(act.Filename) //Funktion zum Laden der Datei in die Struktur
 	if err != nil || gpxDoc == nil {
 
 	}
-	var actspeed = 0.0
+	var actspeed = 0.0 //Definieren von Werten, die während der Auswertung immer wieder verändert werden
 	var globalcounter = 0
 	var kmCounter = 0.0
 	var actkmSpeed = 0.0
 	var timebetween = 0.0
 	//var speedKM [100]float64
-	var aktKM = 1000
+	var aktKM = 1000 //1000M -> 1KM
+
+	//Drei Schleifen, weil die GPX Datei aus Track, Segment und Poiunts aufgebaut ist
+	//und die Points zur Auswertung benötigt werden
 	for i := 0; i < len(gpxDoc.Tracks); i++ {
 		for j := 0; j < len(gpxDoc.Tracks[i].Segments); j++ {
 			for k := 0; k < (len(gpxDoc.Tracks[i].Segments[j].Points))-1; k++ {
-				//log.Print(gpxDoc.Tracks[i].Segments[j].Points[k].Lat , " ", gpxDoc.Tracks[i].Segments[j].Points[k].Lon)
-				distance2Points := distanceBetweenTwoPoints( //6.1
-					gpxDoc.Tracks[i].Segments[j].Points[k].Lat,
-					gpxDoc.Tracks[i].Segments[j].Points[k].Lon,
+				distance2Points := distanceBetweenTwoPoints( //Funktion zur Berechnung der Entfernung zweier GPS Koordinaten
+					gpxDoc.Tracks[i].Segments[j].Points[k].Lat, //Ausgelesen und Übergeben werden jeweils die
+					gpxDoc.Tracks[i].Segments[j].Points[k].Lon, //Lat und Lon der beiden Punkte
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lat,
 					gpxDoc.Tracks[i].Segments[j].Points[k+1].Lon)
+
 				act.Distance += distance2Points
-				if act.Distance >= float64(aktKM) {
+				if act.Distance >= float64(aktKM) { //Auswertung der Geschwindigkeit jedes Kilometers
 					speedKM := actkmSpeed / kmCounter
-					if act.AvgSpeedFastMS < speedKM {
-						act.AvgSpeedFastKM = aktKM / 1000
-						act.AvgSpeedFastMS = speedKM
+					if act.AvgSpeedFastMS < speedKM { //Wenn die Durchschnittsseschwindigkeit dises Kilometers höher ist
+						act.AvgSpeedFastKM = aktKM / 1000 //als die des bisher höchsten, soll diese überschrieben werden
+						act.AvgSpeedFastMS = speedKM      //Zusätzlich wird der aktuelle Kilometer gespeichert
 					}
-					if act.AvgSpeedSlowMS > speedKM {
-						act.AvgSpeedSlowKM = aktKM / 1000
-						act.AvgSpeedSlowMS = speedKM
+					if act.AvgSpeedSlowMS > speedKM { //Wenn die Durchschnittsseschwindigkeit dises Kilometers geringer ist
+						act.AvgSpeedSlowKM = aktKM / 1000 //als die des bisher geringsten, soll diese überschrieben werden
+						act.AvgSpeedSlowMS = speedKM      //Zusätzlich wird der aktuelle Kilometer gespeichert
 					}
-					aktKM += 1000
-					actkmSpeed = 0.0
+					aktKM += 1000    //Absolvierte Kilometer werden erhöht um 1000M
+					actkmSpeed = 0.0 //Zurücksetzten des aktuellen Kilometers um neue Berechung für neuen KM durchzuführen
 					kmCounter = 0.0
 				}
+				//Überprüfung ob die GPX Datei einen Zeitstempel hat
+				//Falls ja soll die Geschwindigkeit ausgerechnet werden
 				if gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp != "" || gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp != "" { // noch Fehler
+
+					//Funktion zur Berechnung der Geschwindikeit aus Entfernung der beiden Punkte und der dafür benötigten Zeit
 					actspeed, timebetween = speed(distance2Points, gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp, gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp)
-					if actspeed > 0.5 { //6.4
-						act.Avgspeed = act.Avgspeed + actspeed //6.2
-						actkmSpeed = actkmSpeed + actspeed
+
+					if actspeed > 0.5 { //Durchschnittsgeschwindigkeit nur auswerten, wenn Nutzer nicht steht
+						act.Avgspeed = act.Avgspeed + actspeed //Addition der Aktuellen Geschwinbdigkeit für spätere
+						actkmSpeed = actkmSpeed + actspeed     //Berechnung der Durchschnittsgeschwindigkeit
 						globalcounter += 1
 						kmCounter += 1
-					} else { //6.3
+					} else { //Berechnung der Standzeit
 						act.Standzeit = act.Standzeit + timebetween
 					}
-					if actspeed > act.HighSpeed {
+					if actspeed > act.HighSpeed { //Auswertung der Maximalgeschwindigkeit
 						act.HighSpeed = actspeed
 						act.Highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				}
-				//log.Print(distance, distance2Points, actspeed, highSpeed, highSpeedTime)
 			}
 		}
 	}
-	act.Avgspeed = act.Avgspeed / float64(globalcounter) //noch Fehler
+	act.Avgspeed = act.Avgspeed / float64(globalcounter) //Berechnung der Durchschnittsgeschwindigkeit
 	act.Distance = math.Round(act.Distance/10) / 100     //km + Rundung auf 2 Nachkommastellen
 	act.HighSpeed = math.Round(act.HighSpeed*100) / 100
 	return act
 }
+
+//Funktion zur Berechnung der Geschwindikeit aus Entfernung der beiden Punkte und der dafür benötigten Zeit
 func speed(distance float64, timestamp1 string, timestamp2 string) (float64, float64) {
 	var timebetween = 0.0
-	layout := "2006-01-02T15:04:05.000Z"
+	layout := "2006-01-02T15:04:05.000Z" //Auswertung der Zeitstempel
 	t, err := time.Parse(layout, timestamp1)
 	t1, err := time.Parse(layout, timestamp2)
 	if err != nil {
@@ -113,32 +116,35 @@ func speed(distance float64, timestamp1 string, timestamp2 string) (float64, flo
 			fmt.Println(err)
 		}
 	}
-	timebetween = float64(t1.Sub(t)) / 1000000000
-	return distance / timebetween, timebetween
+	timebetween = float64(t1.Sub(t)) / 1000000000 //Berechnung der vergangenen Zeit zwischen den beiden Zeitstempel
+	return distance / timebetween, timebetween    //Berechnung der Geschwindigkeit
 
 }
 
+//Funktion zum Laden der benötigten Daten aus der GPX Datei
 func parseFile(filename string) (*Gpx, error) {
-	gpxFile, err := os.Open(filename)
+	gpxFile, err := os.Open(filename) //Filename zum finden der Datei im DataStorage/GPX_Files
 	if err != nil {
 		return nil, err
 	}
 
 	defer gpxFile.Close()
-	b, err := ioutil.ReadAll(gpxFile)
+	b, err := ioutil.ReadAll(gpxFile) //Auslesen der Datei
 	if err != nil {
 		return nil, err
 	}
 
 	g := &Gpx{}
-	xml.Unmarshal(b, &g)
-	return g, nil
+	xml.Unmarshal(b, &g) //Benötigte Dateien der Datei in das GPX Struck schreiben
+	return g, nil        //GPX Struck zur Auswertung zurückgeben
 }
 
 func ToRad(x float64) float64 {
 	return x / 180. * math.Pi
 }
 
+//Funktion zur Berechnung der Entfernung zweier GPS Koordinaten
+//http://www.movable-type.co.uk/scripts/latlong.html
 func distanceBetweenTwoPoints(lat1, lon1, lat2, lon2 float64) float64 {
 	dLat := ToRad(lat1 - lat2)
 	dLon := ToRad(lon1 - lon2)
