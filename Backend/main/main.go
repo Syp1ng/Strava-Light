@@ -9,6 +9,7 @@ func main() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 	activityMap = make(map[int]Activity)
+	activityMapForUser = make(map[int]Activity)
 	SetupLinks()
 	/* for later
 	var port = flag.Int("port", 443, "Port for Webserver")

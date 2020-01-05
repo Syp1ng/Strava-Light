@@ -32,11 +32,10 @@ var activityMap map[int]Activity
 func uploadfile(filename string, activity string, kommentar string, uid int) {
 	readAcivityDB()
 	maxID := 0
-	for k := range activityMap {
-		if k > maxID {
-			maxID = k
+	for _, j := range activityMap {
+		if j.ActID > maxID {
+			maxID = j.ActID
 		}
-
 	}
 
 	newAct := Activity{maxID + 1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000}
@@ -73,11 +72,14 @@ func appendToDBACT(act Activity) bool {
 }
 
 func readAcivityDB() {
+	var id = 0
 	file, err := os.Open(dbLocationActivity)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
+	activityMap = nil
+	activityMap = make(map[int]Activity)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		activity := strings.Split(scanner.Text(), ",")
@@ -94,9 +96,9 @@ func readAcivityDB() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		newActivity := Activity{actID, userID, activity[2], activity[3], activity[3], distance, standzeit, highSpeed, activity[7], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS}
-		activityMap[actID] = newActivity
+		activityMap[id] = newActivity
+		id++
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)

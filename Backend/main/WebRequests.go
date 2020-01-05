@@ -31,7 +31,7 @@ func SetupLinks() {
 }
 
 type FrontendInf struct {
-	Activities []Activity
+	Activities map[int]Activity
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
