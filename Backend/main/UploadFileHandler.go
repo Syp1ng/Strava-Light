@@ -107,7 +107,7 @@ func readAcivityDB() { //Funktion liest alle Aktivitäten in der CSV File aus un
 		}
 
 		//Schreiben der erstellen Aktivität in die Map
-		newActivity := Activity{actID, userID, activity[2], activity[3], activity[3], distance, standzeit, highSpeed, activity[7], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS}
+		newActivity := Activity{actID, userID, activity[2], activity[3], activity[4], distance, standzeit, highSpeed, activity[7], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS}
 		activityMap[id] = newActivity
 		id++
 	}
