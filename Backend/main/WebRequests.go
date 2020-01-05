@@ -33,6 +33,7 @@ func SetupLinks() {
 
 type FrontendInfos struct {
 	Activities map[int]Activity
+	Suche      string
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -306,6 +307,7 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 		search(getUID(cookie.Value), searchString)
 		var dataToTemplate = FrontendInfos{
 			Activities: commentaryMap,
+			Suche:      searchString,
 		}
 		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
 		fmt.Println(error)

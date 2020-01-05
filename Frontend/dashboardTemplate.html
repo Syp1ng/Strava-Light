@@ -4,6 +4,19 @@
     <script src="jquery-3.4.1.min.js"></script>
     <meta charset="utf-8"/>
     <title>Dashboard</title>
+    <style>
+        .activities{
+            display:block;
+            margin-bottom: 8px;
+            border-style: double;
+            border-color: black;
+            padding: 4px;
+            padding-left: 10px;
+        }
+        suche{
+            visibility: hidden;
+        }
+    </style>
 </head>
 <body>
 <h1>Neue Aktivität hochladen</h1>
@@ -45,6 +58,10 @@
         }
         xmlHttp.send("actID="+actID);
     }
+    function suche() {
+        document.getElementById("suche").style.visibility = "visible";
+
+    }
     function saveBlob(blob, fileName) {
         var a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
@@ -83,43 +100,41 @@
     <label>Suche eingeben:
     </label>
     <input name="searchField" type="text">
-    <button name="Suche">Suchen</button>
+    <button id="Suche" onclick="suche()">Suchen</button>
 </form>
-<table>
-  <tr>
-    <th>ActivityID</th>
-    <th>Art der Aktivität</th>
-    <th>Kommentar</th>
-    <th>Gesamtdistanz</th>
-    <th>Standzeit</th>
-	<th>Maximalgeschwindigkeit</th>
-	<th>Maximalgeschwindigkeit am Zeitpunkt</th>
-    <th>Durchschnittsgeschwindigkeit</th>
-    <th>schnellster KM</th>
-    <th>Durchschnittsgeschwindigkeit schnellster Kilometer</th>
-    <th>langsamster KM</th>
-    <th>Durchschnittsgeschwindigkeit langsamster Kilometer</th>
-
-  </tr>
+<div id="suche">Suche nach {{.Suche}} ergab folgende Ergebnisse:  <button onclick="reset()">Suche löschen</button></div>
+<div style="padding-top: 20px">
     {{range .Activities}}
-    <tr>
-        <td>{{.ActID}}</td>
-        <td>{{.Activityart}}</td>
-        <td>{{.Comment}}</td>
-        <td>{{.Distance}} km</td>
-        <td>{{.Standzeit}} s</td>
-        <td>{{.HighSpeed}} M/s</td>
-        <td>{{.Highspeedtime}}</td>
-        <td>{{.Avgspeed}} M/s</td>
-        <td>{{.AvgSpeedFastKM}}</td>
-        <td>{{.AvgSpeedFastMS}} M/s</td>
-        <td>{{.AvgSpeedSlowKM}}</td>
-        <td>{{.AvgSpeedSlowMS}} M/s</td>
-        <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button><button onclick="download()">download</button></td>
-    </tr>
+    <div class="activities">
+        <h3>{{.Activityart}} am {{.Highspeedtime}}</h3>
+        <table style="border-spacing:10px;">
+            <tr>
+                <td><b>Kommentar:</b> {{.Comment}}</td>
+            </tr>
+            <tr>
+                <td><b>Gesamtdistanz:</b> {{.Distance}} km</td>
+                <td><b>Standzeit:</b> {{.Standzeit}} s</td>
+                <td>Schnellste Durchschnittsgeschwindigkeit von {{.AvgSpeedFastMS}} M/s am Kilometer {{.AvgSpeedFastKM}}</td>
+            </tr>
+            <tr>
+                <td><b>Durschnittsgeschwindigkeit:</b> {{.Avgspeed}} M/s</td>
+                <td><b>Höchstgeschwindigkeit:</b> {{.HighSpeed}} M/s</td>
+                <td>Langsamste Durchschnittsgeschwindigkeit von {{.AvgSpeedSlowMS}} M/s am Kilometer {{.AvgSpeedSlowKM}}</td>
+
+            </tr>
+            <tr>
+                <td><b>Datum:</b></td>
+                <td><b>erreicht am Zeitpunkt:</b> {{.Highspeedtime}}</td>
+                <td>ID: {{.ActID}}</td>
+            </tr>
+            <tr>
+                <td><button onclick="edit()">Edit</button><button onclick="remove()">Delete</button><button onclick="download()">Download</button></td>
+            </tr>
+        </table>
+
+    </div>
     {{end}}
-   <tr>
-</table>
+</div>
 
 </body>
 </html>
