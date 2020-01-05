@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	_ "github.com/stretchr/testify/assert"
 	"testing"
@@ -8,4 +9,4 @@ import (
 //Muss das auch getestet werden ?!
 func TestMain(m *testing.M) {
 
-}
+}*/

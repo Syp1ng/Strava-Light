@@ -5,6 +5,19 @@ import (
 	"testing"
 )
 
+func init() {
+	dbLocation = "../../DataStorage/UserDataDB.csv"
+
+	allSessions = make(map[string]sessionKeyInfo)
+	userDataMap = make(map[int]userData)
+	dropTable()
+}
+func beforeTest() {
+	allSessions = make(map[string]sessionKeyInfo)
+	userDataMap = make(map[int]userData)
+	dropTable()
+}
+
 var actualPassword = "TestPassword"
 var hashedPass string
 
@@ -24,9 +37,8 @@ func TestGetRandomString(t *testing.T) {
 }
 func TestRegistration(t *testing.T) {
 	//Test Registration
-	allSessions = make(map[string]sessionKeyInfo)
-	userDataMap = make(map[int]userData)
-	dropTable()
+	beforeTest()
+
 	assert.Equal(t, getUID("111111111111111111111111111"), 0, "it should be 0, because nobody with UserID 0")
 	worked, _ := register("testUser", "testUser@users.de", "notEqual", "not")
 	assert.False(t, worked, "Should be false, because Password not equal")
@@ -39,22 +51,18 @@ func TestRegistration(t *testing.T) {
 
 }
 func TestLogin(t *testing.T) {
-	allSessions = make(map[string]sessionKeyInfo)
-	userDataMap = make(map[int]userData)
-
-	dropTable()
+	beforeTest()
 
 	//Test invalid login
 	worked, _ := login("testUser", "password123")
 	assert.False(t, worked, "Should be false, because user not registered")
-
 	//register
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
-
-	//Test valid Login
+	//Test valid Login*/
 	var sessionKey string
 	worked, sessionKey = login("testUser", "password123")
 	assert.True(t, worked, "Should be true, login success")
 	assert.True(t, checkSessionKey(sessionKey), "Key should be valid")
 	assert.True(t, getUID(sessionKey) > 0, "When Session Key valid, it should return uID >0")
+	assert.True(t, true, true, "true")
 }

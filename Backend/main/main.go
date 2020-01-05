@@ -17,4 +17,6 @@ func main() {
 	var sessionKeyExpires = flag.Int("sessionKeyExpires", 24*7, "Time in houres how long session Key is valid")
 	*/
 
+	//https://stackoverflow.com/questions/23847003/golang-tests-and-working-directory
+
 }

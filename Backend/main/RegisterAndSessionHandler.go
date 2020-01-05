@@ -19,6 +19,11 @@ type sessionKeyInfo struct {
 	forUser    int
 }
 
+func init() {
+	allSessions = make(map[string]sessionKeyInfo)
+	userDataMap = make(map[int]userData)
+}
+
 //Settings
 var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
 var sessionKeyLen int = 50                           //length of the session Key
@@ -42,17 +47,14 @@ func getUID(sessionKey string) int {
 
 //checks if a sessionkey is valid and not expired
 func checkSessionKey(sessionKey string) bool {
-	fmt.Println(sessionKey)
 	info, exists := allSessions[sessionKey]
 	if exists {
 		delta := info.validUntil.Sub(time.Now())
-		fmt.Println(info)
 		if delta > 0 {
-			fmt.Print("valid")
 			return true
 		}
 	}
-	fmt.Println("sesssion not valid")
+	//session invalid
 	return false
 }
 
@@ -86,6 +88,7 @@ func getRandomString(keyLen int) string {
 //Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
 	userData, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0775)
+	defer userData.Close()
 	if error == nil {
 		reader := csv.NewReader(userData)
 		for {
@@ -132,7 +135,6 @@ func register(userName string, email string, password string, confirmPass string
 	} else if len(password) < 8 {
 		return false, "Bitte ein längeres Passwort"
 	}
-
 	readDB()
 	var maxID int = 0
 	for k, v := range userDataMap {
@@ -192,11 +194,11 @@ func readDB() {
 func dropTable() {
 	err := os.Remove(dbLocation)
 	if err != nil {
-		fmt.Println("cannot detele file")
+		fmt.Println("cannot detele file:" + err.Error())
 	}
 	_, err2 := os.Create(dbLocation)
 	if err2 != nil {
-		fmt.Println("cannot create file")
+		fmt.Println("cannot create file:" + err.Error())
 	}
 
 }
