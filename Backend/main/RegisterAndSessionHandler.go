@@ -22,6 +22,7 @@ type sessionKeyInfo struct {
 func init() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
+	rand.Seed(time.Now().UTC().UnixNano()) // for more randomness
 }
 
 //Settings
