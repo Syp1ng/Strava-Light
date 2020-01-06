@@ -95,6 +95,7 @@ func parseDoc(act Activity) Activity { //Funktion, die die hochgeladene Datei au
 						act.Highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
 				} else {
+					act.Timestamp = "NoTime"
 					log.Println("NoTime")
 				}
 			}

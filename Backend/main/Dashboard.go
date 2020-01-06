@@ -113,6 +113,7 @@ func editActivity(editactivity Activity) {
 			editactivity.AvgSpeedFastMS, err = strconv.ParseFloat(line[11], 64)
 			editactivity.AvgSpeedSlowKM, err = strconv.Atoi(line[12])
 			editactivity.AvgSpeedSlowMS, err = strconv.ParseFloat(line[13], 64)
+			editactivity.Timestamp = line[14]
 		}
 	}
 
@@ -121,7 +122,7 @@ func editActivity(editactivity Activity) {
 		editactivity.Activityart + "," + editactivity.Comment + "," + fmt.Sprintf("%f", editactivity.Distance) + "," + fmt.Sprintf("%f", editactivity.Standzeit) + "," +
 		fmt.Sprintf("%f", editactivity.HighSpeed) + "," + editactivity.Highspeedtime + "," + fmt.Sprintf("%f", editactivity.Avgspeed) +
 		"," + strconv.Itoa(editactivity.AvgSpeedFastKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedFastMS) + "," +
-		strconv.Itoa(editactivity.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedSlowMS) +
+		strconv.Itoa(editactivity.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedSlowMS) + "," + editactivity.Timestamp +
 		"\n"
 	_, err = f.WriteString(newline)
 	if err != nil {
@@ -141,9 +142,6 @@ func editActivity(editactivity Activity) {
 			log.Println(error)
 		}
 	}
-}
-func saveNewData(activity []Activity) {
-
 }
 
 //FullTextSearch
