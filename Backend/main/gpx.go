@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
 	"os"
 	"time"
@@ -75,10 +76,11 @@ func parseDoc(act Activity) Activity { //Funktion, die die hochgeladene Datei au
 				}
 				//Überprüfung ob die GPX Datei einen Zeitstempel hat
 				//Falls ja soll die Geschwindigkeit ausgerechnet werden
-				if gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp != "" || gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp != "" { // noch Fehler
+				if len(gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp) != 0 && len(gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp) != 0 { // noch Fehler
 
 					//Funktion zur Berechnung der Geschwindikeit aus Entfernung der beiden Punkte und der dafür benötigten Zeit
 					actspeed, timebetween = speed(distance2Points, gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp, gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp)
+					act.Timestamp = gpxDoc.Tracks[i].Segments[j].Points[k+1].Timestamp
 
 					if actspeed > 0.5 { //Durchschnittsgeschwindigkeit nur auswerten, wenn Nutzer nicht steht
 						act.Avgspeed = act.Avgspeed + actspeed //Addition der Aktuellen Geschwinbdigkeit für spätere
@@ -92,6 +94,8 @@ func parseDoc(act Activity) Activity { //Funktion, die die hochgeladene Datei au
 						act.HighSpeed = actspeed
 						act.Highspeedtime = gpxDoc.Tracks[i].Segments[j].Points[k].Timestamp
 					}
+				} else {
+					log.Println("NoTime")
 				}
 			}
 		}

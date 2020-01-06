@@ -24,6 +24,7 @@ type Activity struct { //Aufbau einer Aktivität
 	AvgSpeedFastMS float64
 	AvgSpeedSlowKM int
 	AvgSpeedSlowMS float64
+	Timestamp      string
 }
 
 var dbLocationActivity = "DataStorage/ActivityDB.csv" //Zentraler Verweis auf den Speicherort der Aktivitäten in einer CSV Datei
@@ -39,7 +40,7 @@ func uploadfile(filename string, activity string, kommentar string, uid int) {
 	}
 
 	//Definition einer neuen Aktivität (zuerst mit Standart Werten, welche alle in der folgenden Funktion überschrieben werden sollen
-	newAct := Activity{maxID + 1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000}
+	newAct := Activity{maxID + 1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000, ""}
 
 	//Funktion, die die hochgeladene Datei auswertet
 	//Die Datei ist über den filename aufrufbar
@@ -65,7 +66,7 @@ func appendToDBACT(act Activity) bool { //Funktion, die die Aktivität in die CS
 		act.Activityart + "," + act.Comment + "," + fmt.Sprintf("%f", act.Distance) + "," + fmt.Sprintf("%f", act.Standzeit) + "," +
 		fmt.Sprintf("%f", act.HighSpeed) + "," + act.Highspeedtime + "," + fmt.Sprintf("%f", act.Avgspeed) +
 		"," + strconv.Itoa(act.AvgSpeedFastKM) + "," + fmt.Sprintf("%f", act.AvgSpeedFastMS) + "," +
-		strconv.Itoa(act.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", act.AvgSpeedSlowMS) +
+		strconv.Itoa(act.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", act.AvgSpeedSlowMS) + "," + act.Timestamp +
 		"\n"
 	f, err := os.OpenFile(dbLocationActivity, os.O_APPEND|os.O_WRONLY, os.ModeAppend) //Zugriff auf die Datei, um zu checken ob kein Fehler auftritt
 	if err != nil {
@@ -107,7 +108,7 @@ func readAcivityDB() { //Funktion liest alle Aktivitäten in der CSV File aus un
 		}
 
 		//Schreiben der erstellen Aktivität in die Map
-		newActivity := Activity{actID, userID, activity[2], activity[3], activity[4], distance, standzeit, highSpeed, activity[7], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS}
+		newActivity := Activity{actID, userID, activity[2], activity[3], activity[4], distance, standzeit, highSpeed, activity[8], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS, activity[14]}
 		activityMap[id] = newActivity
 		id++
 	}

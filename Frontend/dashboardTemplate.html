@@ -99,13 +99,14 @@
 <div style="padding-top: 20px">
     {{range .Activities}}
     <div class="activities">
-        <h3> <span>{{.Activityart}} </span> am {{.Highspeedtime}}</h3>
+        <h3> <span>{{.Activityart}} </span> am {{.Timestamp}}</h3>
         <table style="border-spacing:10px;">
             <caption></caption>
             <tr>
                 <td><b>Kommentar:</b><span>{{.Comment}}</span></td>
             </tr>
             <tr>
+                <td><b>Distanz:</b> {{.Distance}} km</td>
                 <td><b>Standzeit:</b> {{.Standzeit}}</td>
                 <td>Schnellste Durchschnittsgeschwindigkeit von {{.AvgSpeedFastMS}} M/s am Kilometer {{.AvgSpeedFastKM}}</td>
             </tr>
@@ -116,7 +117,7 @@
 
             </tr>
             <tr>
-                <td><b>Datum:</b></td>
+                <td><b>Datum:</b> {{.Timestamp}}</td>
                 <td><b>erreicht am Zeitpunkt:</b> {{.Highspeedtime}}</td>
                 <td>ID: <span>{{.ActID}}</span></td>
             </tr>
