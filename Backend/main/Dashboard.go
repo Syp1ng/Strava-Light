@@ -146,14 +146,19 @@ func editActivity(editactivity Activity) {
 
 //FullTextSearch
 func search(uID int, comment string) map[int]Activity {
+	//Zaehler für Index der neuen Map
 	var position = 0
 	commentaryMap = make(map[int]Activity)
+	//ActivityDB auslesen
 	readAcivityDB()
+	//für alle Aktivitäten in der Map überprüfe
 	for _, value := range activityMap {
+		//wenn UserId übereinstimmt und das gespeicherte Kommentar den Suchstring beinhaltet dann schreibe in neue Map
 		if value.UserID == uID && strings.Contains(value.Comment, comment) {
 			commentaryMap[position] = value
 			position++
 		}
 	}
+	//gebe neue Map zurück
 	return commentaryMap
 }

@@ -303,6 +303,7 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
+		//eingegebenen Suchstring bekommen
 		searchString := r.Form.Get("searchField")
 		search(getUID(cookie.Value), searchString)
 		var dataToTemplate = FrontendInfos{
