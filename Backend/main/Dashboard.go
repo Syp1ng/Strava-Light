@@ -114,6 +114,7 @@ func editActivity(editactivity Activity) {
 			editactivity.AvgSpeedSlowKM, err = strconv.Atoi(line[12])
 			editactivity.AvgSpeedSlowMS, err = strconv.ParseFloat(line[13], 64)
 			editactivity.Timestamp = line[14]
+			editactivity.ZipName = line[15]
 		}
 	}
 
@@ -122,7 +123,7 @@ func editActivity(editactivity Activity) {
 		editactivity.Activityart + "," + editactivity.Comment + "," + fmt.Sprintf("%f", editactivity.Distance) + "," + fmt.Sprintf("%f", editactivity.Standzeit) + "," +
 		fmt.Sprintf("%f", editactivity.HighSpeed) + "," + editactivity.Highspeedtime + "," + fmt.Sprintf("%f", editactivity.Avgspeed) +
 		"," + strconv.Itoa(editactivity.AvgSpeedFastKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedFastMS) + "," +
-		strconv.Itoa(editactivity.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedSlowMS) + "," + editactivity.Timestamp +
+		strconv.Itoa(editactivity.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", editactivity.AvgSpeedSlowMS) + "," + editactivity.Timestamp + "," + editactivity.ZipName +
 		"\n"
 	_, err = f.WriteString(newline)
 	if err != nil {

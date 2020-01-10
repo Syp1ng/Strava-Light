@@ -226,8 +226,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println(err)
 			}
-			tempFile.Write(fileBytes)                                               //Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
-			uploadfile(tempFile.Name(), activity, kommentare, getUID(cookie.Value)) //Funktion die die hochgeladene Datei auswertet
+			tempFile.Write(fileBytes)                                                            //Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
+			uploadfile("NoZipFile", tempFile.Name(), activity, kommentare, getUID(cookie.Value)) //Funktion die die hochgeladene Datei auswertet
 
 		} else if strings.HasSuffix(handler.Filename, ".zip") { //Überprüfen ob es sich um eine ZIP Datei handelt
 			//Temporäre Zip Datei erstellen, in die die hochgeladene Zip Datei kopiert wird
@@ -286,7 +286,7 @@ func Unzip(src string, uid int, actactivity string, komm string) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				uploadfile(tempFile.Name(), actactivity, komm, uid) //Funktion die die aktuelle GPX Datei auswertet
+				uploadfile(src, tempFile.Name(), actactivity, komm, uid) //Funktion die die aktuelle GPX Datei auswertet
 			}
 		}
 	}

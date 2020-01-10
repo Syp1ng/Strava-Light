@@ -25,12 +25,13 @@ type Activity struct { //Aufbau einer Aktivität
 	AvgSpeedSlowKM int
 	AvgSpeedSlowMS float64
 	Timestamp      string
+	ZipName        string
 }
 
 var dbLocationActivity = "DataStorage/ActivityDB.csv" //Zentraler Verweis auf den Speicherort der Aktivitäten in einer CSV Datei
 var activityMap map[int]Activity
 
-func uploadfile(filename string, activity string, kommentar string, uid int) {
+func uploadfile(zipname string, filename string, activity string, kommentar string, uid int) {
 	readAcivityDB() //Funktion liest alle Aktivitäten in der CSV File aus und speichert sie in einer Map
 	maxID := 0
 	for _, j := range activityMap { //Map wird durchlaufen um höchste ActID herrauszufinden
@@ -40,7 +41,7 @@ func uploadfile(filename string, activity string, kommentar string, uid int) {
 	}
 
 	//Definition einer neuen Aktivität (zuerst mit Standart Werten, welche alle in der folgenden Funktion überschrieben werden sollen
-	newAct := Activity{maxID + 1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000, ""}
+	newAct := Activity{maxID + 1, uid, filename, activity, kommentar, 0.0, 0.0, 0.0, "", 0.0, 0, 0.0, 0, 1000, "", zipname}
 
 	//Funktion, die die hochgeladene Datei auswertet
 	//Die Datei ist über den filename aufrufbar
@@ -66,7 +67,7 @@ func appendToDBACT(act Activity) bool { //Funktion, die die Aktivität in die CS
 		act.Activityart + "," + act.Comment + "," + fmt.Sprintf("%f", act.Distance) + "," + fmt.Sprintf("%f", act.Standzeit) + "," +
 		fmt.Sprintf("%f", act.HighSpeed) + "," + act.Highspeedtime + "," + fmt.Sprintf("%f", act.Avgspeed) +
 		"," + strconv.Itoa(act.AvgSpeedFastKM) + "," + fmt.Sprintf("%f", act.AvgSpeedFastMS) + "," +
-		strconv.Itoa(act.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", act.AvgSpeedSlowMS) + "," + act.Timestamp +
+		strconv.Itoa(act.AvgSpeedSlowKM) + "," + fmt.Sprintf("%f", act.AvgSpeedSlowMS) + "," + act.Timestamp + "," + act.ZipName +
 		"\n"
 	f, err := os.OpenFile(dbLocationActivity, os.O_APPEND|os.O_WRONLY, os.ModeAppend) //Zugriff auf die Datei, um zu checken ob kein Fehler auftritt
 	if err != nil {
@@ -108,7 +109,7 @@ func readAcivityDB() { //Funktion liest alle Aktivitäten in der CSV File aus un
 		}
 
 		//Schreiben der erstellen Aktivität in die Map
-		newActivity := Activity{actID, userID, activity[2], activity[3], activity[4], distance, standzeit, highSpeed, activity[8], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS, activity[14]}
+		newActivity := Activity{actID, userID, activity[2], activity[3], activity[4], distance, standzeit, highSpeed, activity[8], avgspeed, avgSpeedFastKM, avgSpeedFastMS, avgSpeedSlowKM, avgSpeedSlowMS, activity[14], activity[15]}
 		activityMap[id] = newActivity
 		id++
 	}
