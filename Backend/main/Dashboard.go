@@ -11,6 +11,7 @@ import (
 )
 
 var activityMapForUser map[int]Activity
+var SortetactivityMapForUser map[int]Activity
 var commentaryMap map[int]Activity
 
 func getDataForUser(uID int) map[int]Activity {
@@ -27,8 +28,23 @@ func getDataForUser(uID int) map[int]Activity {
 			userActivity := j
 			activityMapForUser[position] = userActivity
 			position++
+
 		}
 	}
+	/*keys := make([]string, 0, len(activityMapForUser))
+
+	for _,k := range activityMapForUser {
+		keys = append(keys, k.Timestamp)
+	}
+	sort.Strings(keys)
+	SortetactivityMapForUser = nil
+	SortetactivityMapForUser = make(map[int]Activity)
+
+	for _,k := range keys {
+		fmt.Println(k)
+		//SortetactivityMapForUser[i] = activityMapForUser[k]
+	}
+	*/
 	return activityMapForUser
 }
 
