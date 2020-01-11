@@ -17,6 +17,7 @@ import (
 
 var registerTemplatePath = "Frontend/RegisterTemplate.html"
 var loginTemplatePath = "Frontend/LoginTemplate.html"
+var dashboardTemplatePath = "Frontend/dashboardTemplate.html"
 var port string
 
 func SetupLinks() {
@@ -55,7 +56,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/Login.html", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else { //Wenn gültig übermittlete Form auswerten
 		err := r.ParseForm()
 		if err != nil {
@@ -75,6 +76,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			editActivity(editetAct) //Funktion die die bearbeiteten Werte in der CSV Datei ändert
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 func removeHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +84,7 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/Login.html", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else {
 		err := r.ParseForm()
 		if err != nil {
@@ -94,6 +96,7 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			removeActivity(getUID(cookie.Value), activityID) //Funktion die die Zeile in der CSV Datei löscht
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -142,9 +145,9 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/Login.html", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else {
-		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
+		tmpl, error := template.ParseFiles(dashboardTemplatePath)
 		fmt.Println(error)
 
 		var dataToTemplate = FrontendInfos{

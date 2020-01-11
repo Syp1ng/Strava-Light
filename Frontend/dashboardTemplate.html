@@ -40,7 +40,6 @@
         xmlHttp.open( "POST", "/removeActivity");
         xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
         xmlHttp.send("actID="+actID);
-        xmlHttp.responseType = 'blob';
     }
     function edit(){
         var actIDField = $(event.target).parent().parent().parent()[0].childNodes[6].childNodes[5].childNodes[1];
