@@ -105,7 +105,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/Login.html", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else {
 		err := r.ParseForm()
 		if err != nil {
@@ -208,7 +208,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/", http.StatusUnauthorized)
 	} else {
 
 		r.ParseMultipartForm(10 << 20)            //Auswertung der Form des Frontends
@@ -304,7 +304,7 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("auth")
 	if err != nil || checkSessionKey(cookie.Value) == false { //Wenn nicht gültig, zurück zum Login
 		fmt.Printf("No cookie or invalid Session")
-		http.Redirect(w, r, "/Login.html", http.StatusFound)
+		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else {
 		err := r.ParseForm()
 		if err != nil {
