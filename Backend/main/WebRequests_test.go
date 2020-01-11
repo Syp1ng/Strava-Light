@@ -121,7 +121,6 @@ func TestViewDashboardHandler(t *testing.T) {
 
 func TestRegisterHandler(t *testing.T) {
 	beforeTest()
-
 	reader := strings.NewReader("username=testUser&password=password123&confirmPassword=password12&email=testUser@users.de")
 	req, _ := http.NewRequest("POST", "/registrationHandler", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
