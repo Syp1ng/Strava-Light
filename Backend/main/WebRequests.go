@@ -15,6 +15,10 @@ import (
 	"time"
 )
 
+var registerTemplatePath = "Frontend/RegisterTemplate.html"
+var loginTemplatePath = "Frontend/LoginTemplate.html"
+var port string
+
 func SetupLinks() {
 	http.HandleFunc("/home", viewDashboardHandler)
 	http.HandleFunc("/registrationHandler", registerHandler)
@@ -28,7 +32,7 @@ func SetupLinks() {
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
-	log.Fatalln(http.ListenAndServeTLS(":443", "Backend/main/cert.pem", "Backend/main/key.pem", nil))
+	log.Fatalln(http.ListenAndServeTLS(port, "Backend/main/cert.pem", "Backend/main/key.pem", nil))
 }
 
 type FrontendInfos struct {
@@ -165,7 +169,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/home", http.StatusFound)
 	} else {
-		tmpl, error := template.ParseFiles("Frontend/RegisterTemplate.html")
+		tmpl, error := template.ParseFiles(registerTemplatePath)
 		fmt.Println(error)
 		tmpl.Execute(w, status)
 	}
@@ -182,14 +186,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if check {
 		cookie := http.Cookie{Name: "auth", Value: status}
 		http.SetCookie(w, &cookie)
-		fmt.Println("nice")
+		fmt.Println("login successfull")
 		http.Redirect(w, r, "/home", http.StatusFound)
 	} else {
 		/*fmt.Println(status)
 		http.Error(w,
 			http.StatusText(http.StatusUnauthorized),
 			http.StatusUnauthorized)*/
-		tmpl, error := template.ParseFiles("Frontend/LoginTemplate.html")
+		tmpl, error := template.ParseFiles(loginTemplatePath)
 		fmt.Println(error)
 		tmpl.Execute(w, status)
 	}

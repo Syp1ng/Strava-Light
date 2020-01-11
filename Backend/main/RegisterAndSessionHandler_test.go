@@ -40,22 +40,26 @@ func TestRegistration(t *testing.T) {
 	beforeTest()
 
 	assert.Equal(t, getUID("111111111111111111111111111"), 0, "it should be 0, because nobody with UserID 0")
-	worked, _ := register("testUser", "testUser@users.de", "notEqual", "not")
+	worked, errorMessage := register("testUser", "testUser@users.de", "notEqual", "not")
 	assert.False(t, worked, "Should be false, because Password not equal")
-	worked, _ = register("testUser", "testUser@users.de", "pass", "pass")
+	assert.Equal(t, errorMessage, ErrorMessageRegisterNotSamePass, "The Error Message should be displayed")
+	worked, errorMessage = register("testUser", "testUser@users.de", "pass", "pass")
 	assert.False(t, worked, "Should be false, because Password too short")
-	worked, _ = register("testUser", "testUser@users.de", "password123", "password123")
+	assert.Equal(t, errorMessage, ErrorMessageRegisterInvalidPasswordPolicy, "The Error Message should be displayed")
+	worked, errorMessage = register("testUser", "testUser@users.de", "password123", "password123")
 	assert.True(t, worked, "Should be true, because valid creds")
-	worked, _ = register("testUser", "testUser@users.de", "password123", "password123")
+	worked, errorMessage = register("testUser", "testUser@users.de", "password123", "password123")
 	assert.False(t, worked, "Should be false, because already exists")
+	assert.Equal(t, errorMessage, ErrorMessageRegisterUsernameTaken, "The Error Message should be displayed")
 
 }
 func TestLogin(t *testing.T) {
 	beforeTest()
 
 	//Test invalid login
-	worked, _ := login("testUser", "password123")
+	worked, errorMessage := login("testUser", "password123")
 	assert.False(t, worked, "Should be false, because user not registered")
+	assert.Equal(t, errorMessage, ErrorMessageLoginUsernameUnknown, "The Error Message should be displayed")
 	//register
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
 	//Test valid Login*/

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"strconv"
 )
 
 func main() {
@@ -10,14 +12,10 @@ func main() {
 	userDataMap = make(map[int]userData)
 	activityMap = make(map[int]Activity)
 	activityMapForUser = make(map[int]Activity)
+
+	port = ":" + strconv.Itoa(*flag.Int("port", 443, "Port for Webserver"))
+	saltLen = *flag.Int("saltLen", 10, "Length of the salt for the Password")
+	sessionKeyLen = *flag.Int("sessionKeyLen", 50, "Length of the session Key")
+
 	SetupLinks()
-	/* for later
-	var port = flag.Int("port", 443, "Port for Webserver")
-	var saltLen = flag.Int("saltLen", 1234, "Length of the salt for the Password")
-	var sessionKeyLen = flag.Int("sessionKeyLen", 50, "Length of the session Key")
-	var sessionKeyExpires = flag.Int("sessionKeyExpires", 24*7, "Time in houres how long session Key is valid")
-	*/
-
-	//https://stackoverflow.com/questions/23847003/golang-tests-and-working-directory
-
 }

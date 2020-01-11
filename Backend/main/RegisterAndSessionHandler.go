@@ -26,13 +26,22 @@ func init() {
 }
 
 //Settings
+var sessionKeyLen int //length of the session Key
+var saltLen int       //Length of the salt for the Password
+
 var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
-var sessionKeyLen int = 50                           //length of the session Key
-var saltLen int = 10                                 //Length of the salt for the Password
 var dbLocation string = "DataStorage/UserDataDB.csv" //Path to the UserData
 
 var allSessions map[string]sessionKeyInfo
 var userDataMap map[int]userData
+
+//Error Messages for User
+var ErrorMessageRegisterNotSamePass = "Fehler: Passwörter stimmen nicht überein"
+var ErrorMessageRegisterInvalidPasswordPolicy = "Fehler: Ausgewähltes Passwort zu klein"
+var ErrorMessageRegisterUsernameTaken = "Fehler: Benutzername schon vergeben"
+var ErrorMessageLoginUsernameUnknown = "Fehler: Benutzername existiert nicht"
+var ErrorMessageLoginPasswordWrong = "Fehler: Passwort ist falsch"
+var ErrorUnknown = "Datenbankfehler oder Programmfehler"
 
 type userData struct {
 	uID      int
@@ -88,10 +97,10 @@ func getRandomString(keyLen int) string {
 
 //Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
-	userData, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0775)
-	defer userData.Close()
+	userDataFile, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0777)
+	defer userDataFile.Close()
 	if error == nil {
-		reader := csv.NewReader(userData)
+		reader := csv.NewReader(userDataFile)
 		for {
 			line, err := reader.Read()
 			if err == nil {
@@ -100,15 +109,16 @@ func login(userName string, password string) (bool, string) {
 						x, _ := strconv.Atoi(line[0])
 						return true, generateSessionKey(x)
 					} else {
-						return false, "Wrong password"
+						return false, ErrorMessageLoginPasswordWrong
 					}
 				}
 			} else {
 				break
 			}
 		}
+		return false, ErrorMessageLoginUsernameUnknown
 	}
-	return false, "Username unknown"
+	return false, ErrorUnknown
 }
 
 //function to compare the cleartext Password from User with the hashed Password form the DB
@@ -132,15 +142,15 @@ func hashPassword(password string) string {
 
 func register(userName string, email string, password string, confirmPass string) (bool, string) {
 	if password != confirmPass {
-		return false, "Passwörter stimmen nicht überein"
+		return false, ErrorMessageRegisterNotSamePass
 	} else if len(password) < 8 {
-		return false, "Bitte ein längeres Passwort"
+		return false, ErrorMessageRegisterInvalidPasswordPolicy
 	}
 	readDB()
 	var maxID int = 0
 	for k, v := range userDataMap {
 		if userName == v.userName {
-			return false, "Account exist with that Username"
+			return false, ErrorMessageRegisterUsernameTaken
 		}
 		if k > maxID {
 			maxID = k
@@ -152,32 +162,31 @@ func register(userName string, email string, password string, confirmPass string
 	if appendToDB(newUser) {
 		return true, generateSessionKey(newUser.uID)
 	} else {
-		return false, "error writing to db"
+		return false, ErrorUnknown
 	}
 
 }
 
 func appendToDB(user userData) bool {
 	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
-	f, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
+	userDataFile, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
+	defer userDataFile.Close()
 	if err != nil {
 		return false
 	}
-	defer f.Close()
-
-	_, err = f.WriteString(newline)
+	_, err = userDataFile.WriteString(newline)
 	if err != nil {
 		return false
 	}
 	return true
 }
 func readDB() {
-	file, err := os.Open(dbLocation)
+	userDataFile, err := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0777)
+	defer userDataFile.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(userDataFile)
 	for scanner.Scan() {
 		user := strings.Split(scanner.Text(), ",")
 		if len(user) != 4 {
