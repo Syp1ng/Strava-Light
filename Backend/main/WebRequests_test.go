@@ -19,7 +19,7 @@ func init() {
 
 	dbLocationActivity = "../../DataStorage/ActivityDB.csv"
 	dbLocation = "../../DataStorage/UserDataDB.csv"
-	tempFilePath = "../../DataStorage/Temp.csv"
+	//tempFilePath = "../../DataStorage/Temp.csv"
 	backUpPath = "../../DataStorage/BackupActivityDB.csv"
 
 	allSessions = make(map[string]sessionKeyInfo)

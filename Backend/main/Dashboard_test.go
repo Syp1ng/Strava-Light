@@ -9,7 +9,6 @@ import (
 
 func init() {
 	dbLocationActivity = "../../DataStorage/ActivityDB.csv"
-	tempFilePath = "../../DataStorage/Temp.csv"
 	backUpPath = "../../DataStorage/BackupActivityDB.csv"
 	activityMap = make(map[int]Activity)
 	activityMapForUser = make(map[int]Activity)
