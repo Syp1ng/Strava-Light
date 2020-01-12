@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	allSessions = make(map[string]sessionKeyInfo)
-	userDataMap = make(map[int]userData)
+	//allSessions = make(map[string]sessionKeyInfo)
+	//userDataMap = make(map[int]userData)
 	activityMap = make(map[int]Activity)
 	activityMapForUser = make(map[int]Activity)
 	/*

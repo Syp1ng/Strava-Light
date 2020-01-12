@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-type sessionKeyInfo struct {
+type sessionKeyInfo struct { //simple sessionKeyInfo which is the value of the sessionkey in the map
 	validUntil time.Time
 	forUser    int
 }
@@ -43,7 +43,7 @@ var ErrorMessageLoginUsernameUnknown = "Fehler: Benutzername existiert nicht"
 var ErrorMessageLoginPasswordWrong = "Fehler: Passwort ist falsch"
 var ErrorUnknown = "Datenbankfehler oder Programmfehler"
 
-type userData struct {
+type userData struct { //struct of the userData
 	uID      int
 	userName string
 	email    string
@@ -141,6 +141,7 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hashAlgo.Sum(nil)) + ":" + salt
 }
 
+//the register function which checks if user already exists and calls the function which appends new user to file
 func register(userName string, email string, password string, confirmPass string) (bool, string) {
 	if password != confirmPass {
 		return false, ErrorMessageRegisterNotSamePass
@@ -148,6 +149,9 @@ func register(userName string, email string, password string, confirmPass string
 		return false, ErrorMessageRegisterInvalidPasswordPolicy
 	}
 	readDB()
+	//delete symbols that break csv
+	userName = strings.Replace(userName, ",", "", -1)
+	email = strings.Replace(email, ",", "", -1)
 	var maxID int = 0
 	for k, v := range userDataMap {
 		if userName == v.userName {
@@ -167,7 +171,7 @@ func register(userName string, email string, password string, confirmPass string
 
 }
 
-func appendToDB(user userData) bool {
+func appendToDB(user userData) bool { //appends the new User to the DB/csv file
 	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
 	userDataFile, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer userDataFile.Close()
@@ -182,7 +186,8 @@ func appendToDB(user userData) bool {
 	}
 	return true
 }
-func readDB() {
+func readDB() { //reads the csv and saves in the map and runtime
+	userDataMap = make(map[int]userData)
 	userDataFile, err := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0666)
 	defer userDataFile.Close()
 	if err != nil {
@@ -219,5 +224,4 @@ func dropTable() { //for testing       https://stackoverflow.com/questions/44416
 	defer userDataFile.Close()
 	userDataFile.Truncate(0)
 	userDataFile.Seek(0, 0)
-
 }
