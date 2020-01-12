@@ -105,6 +105,3 @@ func TestSearch(t *testing.T) { //for testing
 		assert.True(t, strings.Contains(v.Comment, testSearch))
 	}
 }
-func TestDownloadActivity(t *testing.T) {
-
-}

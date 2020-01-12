@@ -10,14 +10,18 @@ import (
 	_ "testing"
 )
 
-//https://stackoverflow.com/questions/30  	978105/adding-post-variables-to-go-test-http-request
+//https://stackoverflow.com/questions/30978105/adding-post-variables-to-go-test-http-request
 
 func init() {
 	registerTemplatePath = "../../Frontend/RegisterTemplate.html"
 	loginTemplatePath = "../../Frontend/LoginTemplate.html"
 	dashboardTemplatePath = "../../Frontend/dashboardTemplate.html"
+
 	dbLocationActivity = "../../DataStorage/ActivityDB.csv"
 	dbLocation = "../../DataStorage/UserDataDB.csv"
+	tempFilePath = "../../DataStorage/Temp.csv"
+	backUpPath = "../../DataStorage/BackupActivityDB.csv"
+
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 }
