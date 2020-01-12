@@ -68,7 +68,9 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		activityArt := r.Form.Get("actArt")
 		activityArt = strings.Replace(activityArt, ",", "", -1)
 		activityID, err := strconv.Atoi(activityIDString)
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 		if err == nil {
 			editetAct := Activity{
 				ActID:       activityID,
@@ -150,8 +152,9 @@ func viewDashboardHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/Login.html", http.StatusUnauthorized)
 	} else {
 		tmpl, error := template.ParseFiles(dashboardTemplatePath)
-		fmt.Println(error)
-
+		if error != nil {
+			fmt.Println(error)
+		}
 		var dataToTemplate = FrontendInfos{
 			Activities: getDataForUser(getUID(cookie.Value)),
 		}
@@ -323,7 +326,9 @@ func searchCommentHandler(w http.ResponseWriter, r *http.Request) {
 			Suche:      searchString,
 		}
 		tmpl, error := template.ParseFiles("Frontend/dashboardTemplate.html")
-		fmt.Println(error)
+		if error != nil {
+			fmt.Println(error)
+		}
 		tmpl.Execute(w, dataToTemplate)
 	}
 }
