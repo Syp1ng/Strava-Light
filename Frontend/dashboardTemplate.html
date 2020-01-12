@@ -34,12 +34,15 @@
 
 <script>
     function remove(){
-        var actID = $(event.target).parent().parent().parent()[0].childNodes[6].childNodes[5].childNodes[1].textContent;
-        $(event.target).parent().parent().parent().parent().parent().remove();
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "POST", "/removeActivity");
-        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        xmlHttp.send("actID="+actID);
+        var result = confirm("Wirklich diese Activity löschen?");
+        if(result)  { //https://o7planning.org/de/12271/dialogfeld-alert-confirm-prompt-in-javascript
+            var actID = $(event.target).parent().parent().parent()[0].childNodes[6].childNodes[5].childNodes[1].textContent;
+            $(event.target).parent().parent().parent().parent().parent().remove();
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "POST", "/removeActivity");
+            xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+            xmlHttp.send("actID="+actID);
+        }
     }
     function edit(){
         var actIDField = $(event.target).parent().parent().parent()[0].childNodes[6].childNodes[5].childNodes[1];
