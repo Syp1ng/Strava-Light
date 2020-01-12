@@ -21,9 +21,17 @@ func init() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 }
-
+func addExampleActivityForTest() {
+	standardAct := Activity{
+		Comment:     "comment",
+		UserID:      1,
+		Activityart: "Laufen",
+	}
+	appendToDBACT(standardAct)
+	readAcivityDB()
+}
 func TestLogoutHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
 	_, sessionKey := login("testUser", "password123")
 	assert.True(t, checkSessionKey(sessionKey), "session Key has to be vaild first")
@@ -39,12 +47,17 @@ func TestLogoutHandler(t *testing.T) {
 }
 
 func TestEditHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
+	beforeTestActivityData()
+	addExampleActivityForTest()
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
 	_, sessionKey := login("testUser", "password123")
+	assert.True(t, activityMap[0].Comment == "comment", "should be the new value")
+	assert.True(t, activityMap[0].Activityart == "Laufen", "should be the new value")
 
-	//invalid creds && valid parameters
-	reader := strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
+	//actual Test
+	//invalid creds
+	reader := strings.NewReader("actID=0&actArt=TestActivity&comment=geaendert")
 	req, _ := http.NewRequest("POST", "/editActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie := http.Cookie{Name: "auth", Value: "11111"}
@@ -52,9 +65,11 @@ func TestEditHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	editHandler(w, req)
 	assert.Equal(t, http.StatusUnauthorized, w.Result().StatusCode, " should not have permissions")
+	readAcivityDB()
+	assert.True(t, activityMap[0].Comment == "comment", "should not have changed")
+	assert.True(t, activityMap[0].Activityart == "Laufen", "should not have changed")
 
-	//valid creds && valid parameters
-	reader = strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
+	//valid creds
 	req, _ = http.NewRequest("POST", "/editActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie = http.Cookie{Name: "auth", Value: sessionKey}
@@ -62,14 +77,19 @@ func TestEditHandler(t *testing.T) {
 	w = httptest.NewRecorder()
 	editHandler(w, req)
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode, " should have permissions")
+	readAcivityDB()
+	assert.True(t, activityMap[0].Comment == "geaendert", "should be the new value")
+	assert.True(t, activityMap[0].Activityart == "TestActivity", "should be the new value")
 }
 func TestRemoveHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
+	beforeTestActivityData()
+	addExampleActivityForTest()
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
 	_, sessionKey := login("testUser", "password123")
 
-	//invalid creds && valid parameters
-	reader := strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
+	//invalid creds
+	reader := strings.NewReader("actID=0")
 	req, _ := http.NewRequest("POST", "/removeActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie := http.Cookie{Name: "auth", Value: "11111"}
@@ -77,9 +97,10 @@ func TestRemoveHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	removeHandler(w, req)
 	assert.Equal(t, http.StatusUnauthorized, w.Result().StatusCode, " should not have permissions")
+	readAcivityDB()
+	assert.True(t, len(activityMap) == 1, "should hold 1 activity, because no permission to remove")
 
-	//valid creds && valid parameters
-	reader = strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
+	//valid creds
 	req, _ = http.NewRequest("POST", "/removeActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie = http.Cookie{Name: "auth", Value: sessionKey}
@@ -87,14 +108,12 @@ func TestRemoveHandler(t *testing.T) {
 	w = httptest.NewRecorder()
 	removeHandler(w, req)
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode, " should have permissions")
+	readAcivityDB()
+	assert.True(t, len(activityMap) == 0, "file should now be empty")
+
 }
-
-func TestDownloadHandler(t *testing.T) {
-
-}
-
 func TestViewDashboardHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
 	//with no access
 	req, _ := http.NewRequest("POST", "/home", nil)
 	cookie := http.Cookie{Name: "auth", Value: "11111111"}
@@ -120,7 +139,7 @@ func TestViewDashboardHandler(t *testing.T) {
 }
 
 func TestRegisterHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
 	reader := strings.NewReader("username=testUser&password=password123&confirmPassword=password12&email=testUser@users.de")
 	req, _ := http.NewRequest("POST", "/registrationHandler", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -156,7 +175,7 @@ func TestRegisterHandler(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
-	beforeTest()
+	beforeTestLoginData()
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
 
 	//Username Unknown
@@ -186,10 +205,4 @@ func TestLoginHandler(t *testing.T) {
 	w = httptest.NewRecorder()
 	loginHandler(w, req)
 	assert.Equal(t, http.StatusFound, w.Result().StatusCode, "when valid login status is fine and redirect")
-}
-
-func TestUploadHandler(t *testing.T) {
-
-}
-func TestUnzip(t *testing.T) {
 }

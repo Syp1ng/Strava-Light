@@ -15,25 +15,22 @@ var commentaryMap map[int]Activity
 var tempFilePath = "DataStorage/Temp.csv"
 var backUpPath = "DataStorage/BackupActivityDB.csv"
 
-func DropActivityData() {
-	err := os.Remove(backUpPath)
+func DropActivityData() { //like in RegisterAndSessionHandler  	for testinghttps://stackoverflow.com/questions/44416645/truncate-a-file-in-golang
+	activityDB, err := os.OpenFile(dbLocationActivity, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		fmt.Println("cannot detele file:" + err.Error())
+		fmt.Println("error " + err.Error())
 	}
-	_, err2 := os.Create(backUpPath)
-	if err2 != nil {
-		fmt.Println("cannot create file:" + err2.Error())
-	}
+	defer activityDB.Close()
+	activityDB.Truncate(0)
+	activityDB.Seek(0, 0)
 
-	err = os.Remove(dbLocationActivity)
+	backUpDP, err := os.OpenFile(backUpPath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		fmt.Println("cannot detele file:" + err.Error())
+		fmt.Println("error " + err.Error())
 	}
-	_, err2 = os.Create(dbLocationActivity)
-	if err2 != nil {
-		fmt.Println("cannot create file:" + err2.Error())
-	}
-
+	defer backUpDP.Close()
+	backUpDP.Truncate(0)
+	backUpDP.Seek(0, 0)
 }
 
 func getDataForUser(uID int) map[int]Activity {

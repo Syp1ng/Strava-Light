@@ -12,7 +12,7 @@ func init() {
 	userDataMap = make(map[int]userData)
 	dropTable()
 }
-func beforeTest() {
+func beforeTestLoginData() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 	dropTable()
@@ -39,7 +39,7 @@ func TestGetRandomString(t *testing.T) {
 }
 func TestRegistration(t *testing.T) {
 	//Test Registration
-	beforeTest()
+	beforeTestLoginData()
 
 	assert.Equal(t, getUID("111111111111111111111111111"), 0, "it should be 0, because nobody with UserID 0")
 	worked, errorMessage := register("testUser", "testUser@users.de", "notEqual", "not")
@@ -56,7 +56,7 @@ func TestRegistration(t *testing.T) {
 
 }
 func TestLogin(t *testing.T) { //login test with Session Key and getUID test
-	beforeTest()
+	beforeTestLoginData()
 
 	//Test invalid login
 	worked, errorMessage := login("testUser", "password123")

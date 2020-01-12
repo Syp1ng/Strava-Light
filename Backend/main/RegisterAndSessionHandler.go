@@ -98,7 +98,7 @@ func getRandomString(keyLen int) string {
 
 //Function to Login the user and return 1) if it was successfull 2) an error Message
 func login(userName string, password string) (bool, string) {
-	userDataFile, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0777)
+	userDataFile, error := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0666)
 	defer userDataFile.Close()
 	if error == nil {
 		reader := csv.NewReader(userDataFile)
@@ -169,7 +169,7 @@ func register(userName string, email string, password string, confirmPass string
 
 func appendToDB(user userData) bool {
 	var newline string = strconv.Itoa(user.uID) + "," + user.userName + "," + user.email + "," + user.password + "\n"
-	userDataFile, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
+	userDataFile, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer userDataFile.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -183,7 +183,7 @@ func appendToDB(user userData) bool {
 	return true
 }
 func readDB() {
-	userDataFile, err := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0777)
+	userDataFile, err := os.OpenFile(dbLocation, os.O_RDONLY|os.O_CREATE, 0666)
 	defer userDataFile.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -203,14 +203,21 @@ func readDB() {
 	}
 }
 
-func dropTable() { //for testing
-	err := os.Remove(dbLocation)
+func dropTable() { //for testing       https://stackoverflow.com/questions/44416645/truncate-a-file-in-golang
+	/*err := os.Remove(dbLocation)
 	if err != nil {
 		fmt.Println("cannot detele file:" + err.Error())
 	}
 	_, err2 := os.Create(dbLocation)
 	if err2 != nil {
 		fmt.Println("cannot create file:" + err2.Error())
+	}*/
+	userDataFile, err := os.OpenFile(dbLocation, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("error " + err.Error())
 	}
+	defer userDataFile.Close()
+	userDataFile.Truncate(0)
+	userDataFile.Seek(0, 0)
 
 }

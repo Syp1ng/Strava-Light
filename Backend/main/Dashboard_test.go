@@ -14,40 +14,44 @@ func init() {
 	activityMap = make(map[int]Activity)
 	activityMapForUser = make(map[int]Activity)
 }
-
-func TestEditActivity(t *testing.T) {
+func beforeTestActivityData() {
 	DropActivityData()
+}
+func TestEditActivity(t *testing.T) {
+	beforeTestActivityData()
+
 	standardAct := Activity{
-		ActID:       1,
+		ActID:       0,
 		Comment:     "comment",
 		UserID:      1,
 		Activityart: "Laufen",
 	}
 	appendToDBACT(standardAct)
 	editedAct := Activity{
-		ActID:       1,
+		ActID:       0,
 		Comment:     "geaendert",
 		UserID:      1,
 		Activityart: "TestActivity",
 	}
-	assert.True(t, activityMap[1].Comment == "comment", "should be the new value")
-	assert.True(t, activityMap[1].Activityart == "Laufen", "should be the new value")
+	readAcivityDB()
+	assert.True(t, activityMap[0].Comment == "comment", "should be the new value")
+	assert.True(t, activityMap[0].Activityart == "Laufen", "should be the new value")
 	editActivity(editedAct)
 	readAcivityDB()
-	assert.True(t, activityMap[1].Comment == "geaendert", "should be the new value")
-	assert.True(t, activityMap[1].Activityart == "TestActivity", "should be the new value")
+	assert.True(t, activityMap[0].Comment == "geaendert", "should be the new value")
+	assert.True(t, activityMap[0].Activityart == "TestActivity", "should be the new value")
 }
 func TestGetDataForUser(t *testing.T) {
 	DropActivityData()
 	firstActivity := Activity{
-		ActID:       1,
+		ActID:       0,
 		Comment:     "von User 1",
 		UserID:      1,
 		Activityart: "Laufen",
 	}
 	appendToDBACT(firstActivity)
 	secondActivity := Activity{
-		ActID:       2,
+		ActID:       1,
 		Comment:     "von User 2",
 		UserID:      2,
 		Activityart: "TestActivity",
@@ -63,7 +67,6 @@ func TestGetDataForUser(t *testing.T) {
 func TestRemoveActivity(t *testing.T) {
 	DropActivityData()
 	standardAct := Activity{
-		ActID:       1,
 		Comment:     "comment",
 		UserID:      1,
 		Activityart: "Laufen",
@@ -71,9 +74,11 @@ func TestRemoveActivity(t *testing.T) {
 	appendToDBACT(standardAct)
 	readAcivityDB()
 	assert.True(t, len(activityMap) > 0, "should be something in the activity map")
-	assert.True(t, activityMap[1].Comment == "comment", "should be the new value")
-	assert.True(t, activityMap[1].Activityart == "Laufen", "should be the new value")
-	removeActivity(1, 1)
+	for _, v := range activityMap { //only iterate one time when only one Activit is there
+		assert.True(t, v.Comment == "comment", "should be the new value")
+		assert.True(t, v.Activityart == "Laufen", "should be the new value")
+	}
+	removeActivity(1, 0)
 	readAcivityDB()
 	assert.True(t, len(activityMap) == 0, "file should now be empty")
 }
@@ -81,7 +86,7 @@ func TestRemoveActivity(t *testing.T) {
 func TestSearch(t *testing.T) { //for testing
 	DropActivityData()
 	firstAct := Activity{
-		ActID:       1,
+		ActID:       0,
 		Comment:     "test",
 		UserID:      1,
 		Activityart: "Laufen",
@@ -89,7 +94,7 @@ func TestSearch(t *testing.T) { //for testing
 	secondAct := Activity{
 		ActID:       1,
 		Comment:     "don't find me in search",
-		UserID:      5,
+		UserID:      1,
 		Activityart: "Fahrrad",
 	}
 	appendToDBACT(firstAct)
