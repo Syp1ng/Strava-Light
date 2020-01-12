@@ -148,6 +148,9 @@ func register(userName string, email string, password string, confirmPass string
 		return false, ErrorMessageRegisterInvalidPasswordPolicy
 	}
 	readDB()
+	//delete symbols that break csv
+	userName = strings.Replace(userName, ",", "", -1)
+	email = strings.Replace(email, ",", "", -1)
 	var maxID int = 0
 	for k, v := range userDataMap {
 		if userName == v.userName {
