@@ -64,7 +64,9 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		activityIDString := r.Form.Get("actID") //Auslesen der geänderten Werte
 		comment := r.Form.Get("comment")
+		comment = strings.Replace(comment, ",", "", -1)
 		activityArt := r.Form.Get("actArt")
+		activityArt = strings.Replace(activityArt, ",", "", -1)
 		activityID, err := strconv.Atoi(activityIDString)
 		fmt.Println(err)
 		if err == nil {
@@ -222,6 +224,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(handler.Filename, ".gpx") { //Überprüfen ob es sich um eine GPX Datei handelt
 			activity := r.FormValue("activity")
 			kommentare := r.FormValue("kommentare")
+			kommentare = strings.Replace(kommentare, ",", "", -1)
 
 			//Datei erstellen, in die die hochgeladene GPX Datei kopiert wird
 			tempFile, err := ioutil.TempFile("DataStorage/GPX_Files", "gpxDatei*.gpx")
@@ -233,7 +236,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println(err)
 			}
-			tempFile.Write(fileBytes)                                                            //Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
+			tempFile.Write(fileBytes)
+			//Bytes in erstellete Datei laden, welche im DataStorage gespeichert wird
 			uploadfile("NoZipFile", tempFile.Name(), activity, kommentare, getUID(cookie.Value)) //Funktion die die hochgeladene Datei auswertet
 
 		} else if strings.HasSuffix(handler.Filename, ".zip") { //Überprüfen ob es sich um eine ZIP Datei handelt
@@ -261,6 +265,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 func Unzip(src string, uid int, actactivity string, komm string) {
 	zipReader, _ := zip.OpenReader(src)
+	komm = strings.Replace(komm, ",", "", -1)
 	//Zip Datei öffenen und Datei für Datei durchgehen
 	for _, file := range zipReader.Reader.File {
 		zippedFile, err := file.Open()
