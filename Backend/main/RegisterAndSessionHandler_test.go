@@ -8,8 +8,6 @@ import (
 func init() {
 	dbLocation = "../../DataStorage/UserDataDB.csv"
 
-	allSessions = make(map[string]sessionKeyInfo)
-	userDataMap = make(map[int]userData)
 	dropTable()
 }
 func beforeTestLoginData() {

@@ -18,6 +18,11 @@ import (
 var registerTemplatePath = "Frontend/RegisterTemplate.html"
 var loginTemplatePath = "Frontend/LoginTemplate.html"
 var dashboardTemplatePath = "Frontend/dashboardTemplate.html"
+
+//var certFilePath="Backend/main/cert.pem"
+//var keyFilePath="Backend/main/key.pem"
+var certFilePath = "cert.pem"
+var keyFilePath = "key.pem"
 var port string
 
 func SetupLinks() {
@@ -33,7 +38,7 @@ func SetupLinks() {
 	http.Handle("/", http.FileServer(http.Dir("./Frontend")))
 
 	//http.ListenAndServe(":80", nil)
-	log.Fatalln(http.ListenAndServeTLS(port, "Backend/main/cert.pem", "Backend/main/key.pem", nil))
+	log.Fatalln(http.ListenAndServeTLS(port, certFilePath, keyFilePath, nil))
 }
 
 type FrontendInfos struct {
