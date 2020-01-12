@@ -120,7 +120,7 @@ func editActivity(editactivity Activity) {
 	}
 	defer file.Close()
 	//Temporäre Datei erstellen
-	f, err := os.OpenFile(tempFilePath, os.O_RDONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(tempFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 
 	}
