@@ -22,10 +22,12 @@ var actualPassword = "TestPassword"
 var hashedPass string
 
 func TestHashPassword(t *testing.T) {
+	//test if password is not same after hashfunction
 	hashedPass = hashPassword(actualPassword)
 	assert.NotEqual(t, actualPassword, hashedPass, "Should be hashed")
 }
 func TestComparePasswords(t *testing.T) {
+	//test if password comparison is working
 	hashedPass := hashPassword(actualPassword)
 	assert.True(t, comparePasswords(actualPassword, hashedPass), "Compare function of passwords should return true")
 }
@@ -53,7 +55,7 @@ func TestRegistration(t *testing.T) {
 	assert.Equal(t, errorMessage, ErrorMessageRegisterUsernameTaken, "The Error Message should be displayed")
 
 }
-func TestLogin(t *testing.T) {
+func TestLogin(t *testing.T) { //login test with Session Key and getUID test
 	beforeTest()
 
 	//Test invalid login

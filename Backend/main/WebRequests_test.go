@@ -45,7 +45,7 @@ func TestEditHandler(t *testing.T) {
 
 	//invalid creds && valid parameters
 	reader := strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
-	req, _ := http.NewRequest("POST", "/loginHandler", reader)
+	req, _ := http.NewRequest("POST", "/editActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie := http.Cookie{Name: "auth", Value: "11111"}
 	req.AddCookie(&cookie)
@@ -55,7 +55,7 @@ func TestEditHandler(t *testing.T) {
 
 	//valid creds && valid parameters
 	reader = strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
-	req, _ = http.NewRequest("POST", "/loginHandler", reader)
+	req, _ = http.NewRequest("POST", "/editActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie = http.Cookie{Name: "auth", Value: sessionKey}
 	req.AddCookie(&cookie)
@@ -70,7 +70,7 @@ func TestRemoveHandler(t *testing.T) {
 
 	//invalid creds && valid parameters
 	reader := strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
-	req, _ := http.NewRequest("POST", "/loginHandler", reader)
+	req, _ := http.NewRequest("POST", "/removeActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie := http.Cookie{Name: "auth", Value: "11111"}
 	req.AddCookie(&cookie)
@@ -80,7 +80,7 @@ func TestRemoveHandler(t *testing.T) {
 
 	//valid creds && valid parameters
 	reader = strings.NewReader("actID=1&actArt=Testart&comment=geaendert")
-	req, _ = http.NewRequest("POST", "/loginHandler", reader)
+	req, _ = http.NewRequest("POST", "/removeActivity", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookie = http.Cookie{Name: "auth", Value: sessionKey}
 	req.AddCookie(&cookie)

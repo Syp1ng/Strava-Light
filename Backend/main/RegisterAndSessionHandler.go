@@ -32,8 +32,8 @@ var saltLen int       //Length of the salt for the Password
 var sessionKeyExpires time.Duration = 24 * 7         //how long the session Key is valid
 var dbLocation string = "DataStorage/UserDataDB.csv" //Path to the UserData
 
-var allSessions map[string]sessionKeyInfo
-var userDataMap map[int]userData
+var allSessions map[string]sessionKeyInfo //saves sessions @ runtime
+var userDataMap map[int]userData          //csv -> map ->csv
 
 //Error Messages for User
 var ErrorMessageRegisterNotSamePass = "Fehler: Passwörter stimmen nicht überein"
@@ -57,7 +57,7 @@ func getUID(sessionKey string) int {
 
 //checks if a sessionkey is valid and not expired
 func checkSessionKey(sessionKey string) bool {
-	info, exists := allSessions[sessionKey]
+	info, exists := allSessions[string([]byte(sessionKey))]
 	if exists {
 		delta := info.validUntil.Sub(time.Now())
 		if delta > 0 {
@@ -68,7 +68,7 @@ func checkSessionKey(sessionKey string) bool {
 	return false
 }
 
-//function which returns a sessionkey and saves the key on server side in a map, with more details
+//function which returns a sessionkey and saves the key on server side in a map, with more details, without base 64
 func generateSessionKey(userID int) string {
 	sessionKey := getRandomString(sessionKeyLen)
 	expiresOn := time.Now().Add(time.Hour * sessionKeyExpires)
@@ -76,7 +76,8 @@ func generateSessionKey(userID int) string {
 		validUntil: expiresOn,
 		forUser:    userID,
 	}
-	return sessionKey //base64.StdEncoding.EncodeToString([]byte(sessionKey))
+	return sessionKey
+	//return base64.StdEncoding.EncodeToString([]byte(sessionKey))
 }
 
 //deletes a sessionkey / makes it invalid
@@ -87,10 +88,10 @@ func delSessionKey(sessionKey string) {
 //Function which returns a String of a costum length from a charset
 func getRandomString(keyLen int) string {
 	//rand.Seed(time.Now().UnixNano())
-	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	var charset string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" //random charset for random number generator
 	var generatedKey string
 	for i := 0; i <= keyLen; i++ {
-		generatedKey += string(charset[rand.Intn(len(charset))])
+		generatedKey += string(charset[rand.Intn(len(charset))]) //with number it picks random char from charset
 	}
 	return generatedKey
 }
@@ -106,8 +107,8 @@ func login(userName string, password string) (bool, string) {
 			if err == nil {
 				if line[1] == userName {
 					if comparePasswords(password, line[3]) {
-						x, _ := strconv.Atoi(line[0])
-						return true, generateSessionKey(x)
+						userID, _ := strconv.Atoi(line[0])
+						return true, generateSessionKey(userID)
 					} else {
 						return false, ErrorMessageLoginPasswordWrong
 					}
@@ -152,10 +153,9 @@ func register(userName string, email string, password string, confirmPass string
 		if userName == v.userName {
 			return false, ErrorMessageRegisterUsernameTaken
 		}
-		if k > maxID {
+		if k > maxID { //find out the highest userID to set the new one higher than the highest
 			maxID = k
 		}
-
 	}
 	newUser := userData{maxID + 1, userName, email, hashPassword(password)}
 	userDataMap[maxID+1] = newUser
@@ -172,10 +172,12 @@ func appendToDB(user userData) bool {
 	userDataFile, err := os.OpenFile(dbLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
 	defer userDataFile.Close()
 	if err != nil {
+		log.Fatal(err)
 		return false
 	}
 	_, err = userDataFile.WriteString(newline)
 	if err != nil {
+		log.Fatal(err)
 		return false
 	}
 	return true
@@ -190,7 +192,7 @@ func readDB() {
 	for scanner.Scan() {
 		user := strings.Split(scanner.Text(), ",")
 		if len(user) != 4 {
-			continue //invalid or  empty
+			continue //invalid data or  empty row
 		}
 		userID, _ := strconv.Atoi(user[0])
 		newUser := userData{userID, user[1], user[2], user[3]}
@@ -201,14 +203,14 @@ func readDB() {
 	}
 }
 
-func dropTable() {
+func dropTable() { //for testing
 	err := os.Remove(dbLocation)
 	if err != nil {
 		fmt.Println("cannot detele file:" + err.Error())
 	}
 	_, err2 := os.Create(dbLocation)
 	if err2 != nil {
-		fmt.Println("cannot create file:" + err.Error())
+		fmt.Println("cannot create file:" + err2.Error())
 	}
 
 }

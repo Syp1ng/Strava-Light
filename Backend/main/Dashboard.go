@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -13,6 +12,29 @@ import (
 var activityMapForUser map[int]Activity
 var SortetactivityMapForUser map[int]Activity
 var commentaryMap map[int]Activity
+var tempFilePath = "DataStorage/Temp.csv"
+var backUpPath = "DataStorage/BackupActivityDB.csv"
+
+func DropActivityData() {
+	err := os.Remove(backUpPath)
+	if err != nil {
+		fmt.Println("cannot detele file:" + err.Error())
+	}
+	_, err2 := os.Create(backUpPath)
+	if err2 != nil {
+		fmt.Println("cannot create file:" + err2.Error())
+	}
+
+	err = os.Remove(dbLocationActivity)
+	if err != nil {
+		fmt.Println("cannot detele file:" + err.Error())
+	}
+	_, err2 = os.Create(dbLocationActivity)
+	if err2 != nil {
+		fmt.Println("cannot create file:" + err2.Error())
+	}
+
+}
 
 func getDataForUser(uID int) map[int]Activity {
 	var position = 0
@@ -56,7 +78,7 @@ func removeActivity(uID int, activityID int) {
 	defer file.Close()
 
 	//Temporäre Datei erstellen
-	f, err := os.OpenFile("DataStorage/Temp.csv", os.O_RDONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(tempFilePath, os.O_RDONLY|os.O_CREATE, 0666)
 	if err != nil {
 
 	}
@@ -82,11 +104,11 @@ func removeActivity(uID int, activityID int) {
 	f.Close()
 
 	//Temporäre Datei wird zur Hauptaktivitäts-Datei und die vorherige Hauptaktivitäts-Datei wird zum Backup durch Rename
-	var error = os.Rename(filepath.Join("DataStorage", "ActivityDB.csv"), filepath.Join("DataStorage", "BackupActivityDB.csv"))
+	var error = os.Rename(dbLocationActivity, backUpPath)
 	if error != nil {
 		log.Println(error)
 	} else {
-		error = os.Rename(filepath.Join("DataStorage", "Temp.csv"), filepath.Join("DataStorage", "ActivityDB.csv"))
+		error = os.Rename(tempFilePath, dbLocationActivity)
 		if error != nil {
 			log.Println(error)
 		}
@@ -101,7 +123,7 @@ func editActivity(editactivity Activity) {
 	}
 	defer file.Close()
 	//Temporäre Datei erstellen
-	f, err := os.OpenFile("DataStorage/Temp.csv", os.O_RDONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(tempFilePath, os.O_RDONLY|os.O_CREATE, 0666)
 	if err != nil {
 
 	}
@@ -150,11 +172,11 @@ func editActivity(editactivity Activity) {
 	f.Close()
 
 	//Temporäre Datei wird zur Hauptaktivitäts-Datei und die vorherige Hauptaktivitäts-Datei wird zum Backup durch Rename
-	var error = os.Rename(filepath.Join("DataStorage", "ActivityDB.csv"), filepath.Join("DataStorage", "BackupActivityDB.csv"))
+	var error = os.Rename(dbLocationActivity, backUpPath)
 	if error != nil {
 		log.Println(error)
 	} else {
-		error = os.Rename(filepath.Join("DataStorage", "Temp.csv"), filepath.Join("DataStorage", "ActivityDB.csv"))
+		error = os.Rename(tempFilePath, dbLocationActivity)
 		if error != nil {
 			log.Println(error)
 		}
