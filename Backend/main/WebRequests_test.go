@@ -25,15 +25,7 @@ func init() {
 	allSessions = make(map[string]sessionKeyInfo)
 	userDataMap = make(map[int]userData)
 }
-func addExampleActivityForTest() {
-	standardAct := Activity{
-		Comment:     "comment",
-		UserID:      1,
-		Activityart: "Laufen",
-	}
-	appendToDBACT(standardAct)
-	readAcivityDB()
-}
+
 func TestLogoutHandler(t *testing.T) {
 	beforeTestLoginData()
 	_, _ = register("testUser", "testUser@users.de", "password123", "password123")
