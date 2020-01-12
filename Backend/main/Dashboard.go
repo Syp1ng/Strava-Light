@@ -15,7 +15,7 @@ var commentaryMap map[int]Activity
 var tempFilePath = "DataStorage/Temp.csv"
 var backUpPath = "DataStorage/BackupActivityDB.csv"
 
-func DropActivityData() { //like in RegisterAndSessionHandler  	for testinghttps://stackoverflow.com/questions/44416645/truncate-a-file-in-golang
+func DropActivityData() { //like in RegisterAndSessionHandler  	for testing https://stackoverflow.com/questions/44416645/truncate-a-file-in-golang
 	activityDB, err := os.OpenFile(dbLocationActivity, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("error " + err.Error())
